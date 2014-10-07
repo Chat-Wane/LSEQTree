@@ -141,4 +141,81 @@ describe('lseqnode.js', function() {
 		       expect(root.get(3)).to.be.eql(d);
 		   });
 	    });
+	
+	describe('del',function(){
+		it('should delete a node of the simple tree', function(){
+			var root = new LSEQNode([],"a");
+			var listTriple = [];
+			listTriple.push(new Triple(1,1,1));
+			var b = new LSEQNode(listTriple, "b");
+			root.add(b);
+			var listTriple = [];
+			listTriple.push(new Triple(2,2,2));
+			var c = new LSEQNode(listTriple, "c");
+			root.add(c);
+			expect(root.getIndex(c)).to.be.eql(2);
+			root.del(b);
+			expect(root.getIndex(c)).to.be.eql(1);
+		    });
+
+		it('should delete all intermediary nodes in a useless path',
+		   function(){
+		       var root = new LSEQNode([],"a");
+		       var listTriple = [];
+		       listTriple.push(new Triple(1,1,1));
+		       listTriple.push(new Triple(2,2,2));
+		       listTriple.push(new Triple(3,3,3));
+		       var b = new LSEQNode(listTriple, "b");
+		       root.add(b);
+		       var listTriple = [];
+		       listTriple.push(new Triple(1,1,1));
+		       var c = new LSEQNode(listTriple, "c");
+		       root.add(c);
+		       var listTriple = [];
+		       listTriple.push(new Triple(1,1,1));
+		       listTriple.push(new Triple(2,2,2));
+		       listTriple.push(new Triple(3,3,3));
+		       var b = new LSEQNode(listTriple, "b");
+		       expect(root.getIndex(c)).to.be.eql(1);
+		       expect(root.getIndex(b)).to.be.eql(2);
+		       root.del(b);
+		       expect(root.getIndex(c)).to.be.eql(1);
+		       expect(root.children[0].e).to.be.eql("c");
+		       expect(root.children[0].children.length).to.be.eql(0);
+		   });
+		
+		it('more complexe tree, remove the subtree but not all nodes',
+		   function(){
+		       var root = new LSEQNode([],"a");
+                       var listTriple = [];
+                       listTriple.push(new Triple(1,1,1));
+                       listTriple.push(new Triple(2,2,2));
+                       listTriple.push(new Triple(3,3,3));
+                       var b = new LSEQNode(listTriple, "b");
+                       root.add(b);
+                       var listTriple = [];
+                       listTriple.push(new Triple(1,1,1));
+                       var c = new LSEQNode(listTriple, "c");
+                       root.add(c);
+                       var listTriple = [];
+                       listTriple.push(new Triple(1,1,1));
+                       listTriple.push(new Triple(2,2,2));
+		       listTriple.push(new Triple(4,4,4));
+                       listTriple.push(new Triple(5,5,5));
+		       var d = new LSEQNode(listTriple, "d");
+		       root.add(d);		       
+		       // remove the elements
+                       var listTriple = [];
+                       listTriple.push(new Triple(1,1,1));
+                       listTriple.push(new Triple(2,2,2));
+                       listTriple.push(new Triple(3,3,3));
+                       var b = new LSEQNode(listTriple, "b");
+                       expect(root.getIndex(c)).to.be.eql(1);
+                       expect(root.getIndex(b)).to.be.eql(2);
+                       expect(root.getIndex(d)).to.be.eql(3);
+                       root.del(b);
+                       expect(root.getIndex(c)).to.be.eql(1);
+                       expect(root.getIndex(d)).to.be.eql(2);
+		   });
+	    });
     });
