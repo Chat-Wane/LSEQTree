@@ -5,6 +5,7 @@ var Mocha  = require('mocha');
 var Base = new (require('../lib/base.js'))(3);
 var ID = require('../lib/identifier.js');
 var Triple = require('../lib/triple.js');
+var LSEQNode = require('../lib/lseqnode.js');
 
 // using a departure base value of 3 bits
 describe('positions.js', function() {
@@ -86,23 +87,24 @@ describe('positions.js', function() {
 	    it('convert a simple id to a path', function(){
 		    var i1 = new ID(BI.int2bigInt(21,Base.getSumBit(1)),
 				    [3,3],[0,2]); // d:[1.5]
-		    var resultPath = i1.toPath();
-		    expect(resultPath[0].p).to.be.eql(1);
-		    expect(resultPath[1].p).to.be.eql(5);
-		    expect(resultPath[0].s).to.be.eql(3);
-		    expect(resultPath[1].s).to.be.eql(3);
-		    expect(resultPath[0].c).to.be.eql(0);
-		    expect(resultPath[1].c).to.be.eql(2);
+		    var resultNode = i1.toNode();
+		    expect(resultNode.t.p).to.be.eql(1);
+		    expect(resultNode.children[0].t.p).to.be.eql(5);
+		    expect(resultNode.t.s).to.be.eql(3);
+		    expect(resultNode.children[0].t.s).to.be.eql(3);
+		    expect(resultNode.t.c).to.be.eql(0);
+		    expect(resultNode.children[0].t.c).to.be.eql(2);
 		});
 	});
     
-    describe('toPath', function(){
-	    it('convert a simple path to an identifier', function(){
+    describe('fromNode', function(){
+	    it('convert a simple node to an identifier', function(){
 		    var path = [];
 		    path.push(new Triple(1,3,0));
 		    path.push(new Triple(5,3,2));
+		    var node = new LSEQNode(path,null);
 		    var id = new ID(null,[],[]);
-		    id.fromPath(path);
+		    id.fromNode(node);
 		    expect(BI.isZero(id._d)).to.be.ok();
 		    expect(id._s[0]).to.be.eql(3);
 		    expect(id._s[1]).to.be.eql(3);

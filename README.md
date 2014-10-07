@@ -3,9 +3,7 @@
 <i>Keywords: distributed systems, collaborative editing, CRDT, LSEQ allocation strategy, unique identifiers, tree-based array</i>
 
 This project aims to provide an implementation of a CRDT-based array with an
-underlying tree-model and the allocation strategy LSEQ. Thus, the array
-structure allows distributed updates without having to manage the difficult
-task of solving conflicts.
+underlying exponential tree and the allocation strategy LSEQ.
 
 ## Installation
 
