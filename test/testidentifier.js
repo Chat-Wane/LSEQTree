@@ -99,13 +99,15 @@ describe('positions.js', function() {
     
     describe('fromNode', function(){
 	    it('convert a simple node to an identifier', function(){
+		    var Base = require('../lib/base.js').getInstance(3);
 		    var path = [];
 		    path.push(new Triple(1,3,0));
 		    path.push(new Triple(5,3,2));
 		    var node = new LSEQNode(path,null);
 		    var id = new ID(null,[],[]);
 		    id.fromNode(node);
-		    expect(BI.isZero(id._d)).to.be.ok();
+		    var onefive = BI.int2bigInt(21,Base.getSumBit(1));
+		    expect(id._d).to.be.eql(onefive);
 		    expect(id._s[0]).to.be.eql(3);
 		    expect(id._s[1]).to.be.eql(3);
 		    expect(id._c[0]).to.be.eql(0);
