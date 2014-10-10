@@ -116,27 +116,27 @@ describe('lseqnode.js', function() {
 		       expect(root.get(1)).to.be.eql(b);
 		       expect(root.get(2)).to.be.eql(c);
 		   });
-		it('get the values at the given index with tree of depth 2',
-		   function(){
-		       var root = new LSEQNode([],"a");
-		       var listTriple = [];
-		       listTriple.push(new Triple(1,1,1));
-		       var b = new LSEQNode(listTriple,"b");
-		       root.add(b);
-		       var listTriple = [];
-		       listTriple.push(new Triple(2,2,2));
-		       listTriple.push(new Triple(3,3,3));
-		       var d = new LSEQNode(listTriple,"d");
+ 		it('get the values at the given index with tree of depth 2',
+ 		   function(){
+ 		       var root = new LSEQNode([],"a");
+ 		       var listTriple = [];
+ 		       listTriple.push(new Triple(1,1,1));
+ 		       var b = new LSEQNode(listTriple,"b");
+ 		       root.add(b);
+ 		       var listTriple = [];
+ 		       listTriple.push(new Triple(2,2,2));
+ 		       listTriple.push(new Triple(3,3,3));
+ 		       var d = new LSEQNode(listTriple,"d");
 		       root.add(d);
-		       var listTriple = [];
+ 		       var listTriple = [];
+ 		       listTriple.push(new Triple(2,2,2));
+ 		       var c = new LSEQNode(listTriple,"c");
+ 		       root.add(c);
+ 		       var listTriple = [];
 		       listTriple.push(new Triple(2,2,2));
-		       var c = new LSEQNode(listTriple,"c");
-		       root.add(c);
-		       var listTriple = [];
-		       listTriple.push(new Triple(2,2,2));
-		       listTriple.push(new Triple(3,3,3));
+ 		       listTriple.push(new Triple(3,3,3));
 		       var d = new LSEQNode(listTriple,"d");
-		       expect(root.get(1)).to.be.eql(b);
+ 		       expect(root.get(1)).to.be.eql(b);
 		       expect(root.get(2)).to.be.eql(c);
 		       expect(root.get(3)).to.be.eql(d);
 		   });
