@@ -218,4 +218,31 @@ describe('lseqnode.js', function() {
                        expect(root.getIndex(d)).to.be.eql(2);
 		   });
 	    });
+	describe('getIndexes', function(){
+		it('get the list of succesive indexes of a path in a tree',
+		   function(){
+		       var root = new LSEQNode([],null);
+		       var tripleList = [];
+		       tripleList.push(new Triple(1,1,1));
+		       var a = new LSEQNode(tripleList, "a");
+		       root.add(a);
+		       var tripleList = [];
+		       tripleList.push(new Triple(2,2,2));
+		       tripleList.push(new Triple(3,3,3));
+		       var b = new LSEQNode(tripleList, "b");
+		       root.add(b);
+		       var tripleList = [];
+		       tripleList.push(new Triple(2,2,2));
+		       tripleList.push(new Triple(4,4,4));
+		       var c = new LSEQNode(tripleList, "c");
+		       root.add(c);
+		       expect(root.subCounter).to.be.eql(3);
+		       expect(root.getIndex(a)).to.be.eql(0);
+		       expect(root.getIndex(b)).to.be.eql(1);
+		       expect(root.getIndex(c)).to.be.eql(2);
+		       expect(root.getIndexes(a)).to.be.eql([0]);
+		       expect(root.getIndexes(b)).to.be.eql([1,0]);
+		       expect(root.getIndexes(c)).to.be.eql([1,1]);
+		   });
+	    });
     });
