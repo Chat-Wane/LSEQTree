@@ -80,14 +80,27 @@ describe('lseqtree.js', function(){
  			};	    
  			expect(lseq.length).to.be.eql(0);
  		    });
-		it('inserts an already existing elements', function(){
+	    });
+	describe('applyInsert', function(){
+		it('try to insert an already existing elements but cant',
+		   function(){
+		       var lseq = new LSEQ(42);
+		       var ei = lseq.insert('a',0);
+		       var lseq2 = new LSEQ(1337);
+		       var exist = lseq.applyInsert(ei._e,ei._i);
+		       expect(exist).to.be.eql(-1);
+		       var position = lseq2.applyInsert(ei._e,ei._i);
+		       expect(position).to.be.eql(0);
+		   });
+	    });
+	describe('applyRemove', function(){
+		it('try to delete a non existing element', function(){
 			var lseq = new LSEQ(42);
 			var ei = lseq.insert('a',0);
-			var lseq2 = new LSEQ(1337);
-			var exist = lseq.applyInsert(ei._e,ei._i);
-			expect(exist).to.be.eql(-1);
-			var position = lseq2.applyInsert(ei._e,ei._i);
+			var position = lseq.applyRemove(ei._i);
 			expect(position).to.be.eql(0);
+			var exist = lseq.applyRemove(ei._i);
+			expect(exist).to.be.eql(-1);
 		    });
 	    });
     });
