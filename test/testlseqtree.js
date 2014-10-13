@@ -90,7 +90,7 @@ describe('lseqtree.js', function(){
 		       var exist = lseq.applyInsert(ei._e,ei._i);
 		       expect(exist).to.be.eql(-1);
 		       var position = lseq2.applyInsert(ei._e,ei._i);
-		       expect(position).to.be.eql(0);
+		       expect(position).to.be.eql(1);
 		   });
 	    });
 	describe('applyRemove', function(){
@@ -98,7 +98,7 @@ describe('lseqtree.js', function(){
 			var lseq = new LSEQ(42);
 			var ei = lseq.insert('a',0);
 			var position = lseq.applyRemove(ei._i);
-			expect(position).to.be.eql(0);
+			expect(position).to.be.eql(1);
 			var exist = lseq.applyRemove(ei._i);
 			expect(exist).to.be.eql(-1);
 		    });
