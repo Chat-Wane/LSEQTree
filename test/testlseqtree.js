@@ -3,7 +3,7 @@ var Mocha = require('mocha');
 
 var LSEQ = require('../lib/lseqtree.js');
 
-var N = 100000;
+var N = 10000;
 
 describe('lseqtree.js', function(){
 	
@@ -31,7 +31,6 @@ describe('lseqtree.js', function(){
  		       var lseq = new LSEQ(42);
  		       for (i= 0; i < N; ++i){
  			   var a = lseq.insert('a',0);
-			   // console.log(i + "    " + a._i._c.length + "   " + a._i._d); 
  		       };
  		       expect(lseq.length).to.be.eql(N);
  		   });
@@ -41,7 +40,6 @@ describe('lseqtree.js', function(){
  		       var lseq = new LSEQ(42);
  		       for (i= 0; i < N; ++i){
  			   var a = lseq.insert('a',lseq.length);
-			   //console.log(i + "    " + a._i._c.length + "   " + a._i._d); 
  		       };
 		       expect(lseq.length).to.be.eql(N);
  		   });

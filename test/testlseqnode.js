@@ -216,6 +216,11 @@ describe('lseqnode.js', function() {
                        root.del(b);
                        expect(root.getIndex(c)).to.be.eql(1);
                        expect(root.getIndex(d)).to.be.eql(2);
+                       var listTriple = [];
+                       listTriple.push(new Triple(1,1,1));
+                       var c = new LSEQNode(listTriple, "c");
+		       root.del(c);
+		       expect(root.getIndex(d)).to.be.eql(1);
 		   });
 	    });
 	describe('getIndexes', function(){
