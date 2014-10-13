@@ -3,6 +3,8 @@ var Mocha = require('mocha');
 
 var LSEQ = require('../lib/lseqtree.js');
 
+var N = 100000;
+
 describe('lseqtree.js', function(){
 	
 	describe('constructor', function(){
@@ -23,33 +25,35 @@ describe('lseqtree.js', function(){
 			expect(lseq._s).to.be.eql(42);
 			expect(lseq.get(1).e).to.be.eql('a');
 		    });
- 		it('insert 10000 elements at the beginning of the structure',
+ 		it('insert '+ N +' elements at the beginning of the structure',
  		   function(){
- 		       this.timeout(20000);
+ 		       this.timeout(2*N);
  		       var lseq = new LSEQ(42);
- 		       for (i= 0; i < 10000; ++i){
- 			   lseq.insert('a',0);
+ 		       for (i= 0; i < N; ++i){
+ 			   var a = lseq.insert('a',0);
+			   // console.log(i + "    " + a._i._c.length + "   " + a._i._d); 
  		       };
- 		       expect(lseq.length).to.be.eql(10000);
+ 		       expect(lseq.length).to.be.eql(N);
  		   });
- 		it('insert 10000 elements at the end of the structure',
+ 		it('insert '+ N + ' elements at the end of the structure',
  		   function(){
- 		       this.timeout(20000);
+ 		       this.timeout(2*N);
  		       var lseq = new LSEQ(42);
- 		       for (i= 0; i < 10000; ++i){
- 			   lseq.insert('a',lseq.length);
+ 		       for (i= 0; i < N; ++i){
+ 			   var a = lseq.insert('a',lseq.length);
+			   //console.log(i + "    " + a._i._c.length + "   " + a._i._d); 
  		       };
-		       expect(lseq.length).to.be.eql(10000);
+		       expect(lseq.length).to.be.eql(N);
  		   });
- 		it('insert 10000 elements at random position in the structure',
+ 		it('insert '+ N +' elements at rand position in the structure',
  		   function(){
- 		       this.timeout(20000);
+ 		       this.timeout(2*N);
  		       var lseq = new LSEQ(42);
- 		       for (i= 0; i < 10000; ++i){
+ 		       for (i= 0; i < N; ++i){
  			   var rand = Math.floor(Math.random()*lseq.length);
  			   lseq.insert('a',rand);
  		       };
-		       expect(lseq.length).to.be.eql(10000);
+		       expect(lseq.length).to.be.eql(N);
  		   });
  	    });
 	
