@@ -79,9 +79,9 @@ describe('lseqnode.js', function() {
 		       var d = new LSEQNode(tripleList, "d");
 		       root.add(d);
 		       expect(root.subCounter).to.be.eql(3);
-		       expect(root.getIndex(b)).to.be.eql(1);
-		       expect(root.getIndex(c)).to.be.eql(2);
-		       expect(root.getIndex(d)).to.be.eql(3);
+		       expect(root.indexOf(b)).to.be.eql(1);
+		       expect(root.indexOf(c)).to.be.eql(2);
+		       expect(root.indexOf(d)).to.be.eql(3);
 		   });
 		it ('construct a tree and insert an element within existing branch',
 		    function(){
@@ -96,8 +96,8 @@ describe('lseqnode.js', function() {
 			var b = new LSEQNode(tripleList, "b");
 			root.add(b);
 			expect(root.subCounter).to.be.eql(2);
-		       	expect(root.getIndex(c)).to.be.eql(2);
-			expect(root.getIndex(b)).to.be.eql(1);
+		       	expect(root.indexOf(c)).to.be.eql(2);
+			expect(root.indexOf(b)).to.be.eql(1);
 		    });
 	    });
 	describe('get', function(){
@@ -153,9 +153,9 @@ describe('lseqnode.js', function() {
 			listTriple.push(new Triple(2,2,2));
 			var c = new LSEQNode(listTriple, "c");
 			root.add(c);
-			expect(root.getIndex(c)).to.be.eql(2);
+			expect(root.indexOf(c)).to.be.eql(2);
 			root.del(b);
-			expect(root.getIndex(c)).to.be.eql(1);
+			expect(root.indexOf(c)).to.be.eql(1);
 		    });
 
 		it('should delete all intermediary nodes in a useless path',
@@ -176,10 +176,10 @@ describe('lseqnode.js', function() {
 		       listTriple.push(new Triple(2,2,2));
 		       listTriple.push(new Triple(3,3,3));
 		       var b = new LSEQNode(listTriple, "b");
-		       expect(root.getIndex(c)).to.be.eql(1);
-		       expect(root.getIndex(b)).to.be.eql(2);
+		       expect(root.indexOf(c)).to.be.eql(1);
+		       expect(root.indexOf(b)).to.be.eql(2);
 		       root.del(b);
-		       expect(root.getIndex(c)).to.be.eql(1);
+		       expect(root.indexOf(c)).to.be.eql(1);
 		       expect(root.children[0].e).to.be.eql("c");
 		       expect(root.children[0].children.length).to.be.eql(0);
 		   });
@@ -210,17 +210,17 @@ describe('lseqnode.js', function() {
                        listTriple.push(new Triple(2,2,2));
                        listTriple.push(new Triple(3,3,3));
                        var b = new LSEQNode(listTriple, "b");
-                       expect(root.getIndex(c)).to.be.eql(1);
-                       expect(root.getIndex(b)).to.be.eql(2);
-                       expect(root.getIndex(d)).to.be.eql(3);
+                       expect(root.indexOf(c)).to.be.eql(1);
+                       expect(root.indexOf(b)).to.be.eql(2);
+                       expect(root.indexOf(d)).to.be.eql(3);
                        root.del(b);
-                       expect(root.getIndex(c)).to.be.eql(1);
-                       expect(root.getIndex(d)).to.be.eql(2);
+                       expect(root.indexOf(c)).to.be.eql(1);
+                       expect(root.indexOf(d)).to.be.eql(2);
                        var listTriple = [];
                        listTriple.push(new Triple(1,1,1));
                        var c = new LSEQNode(listTriple, "c");
 		       root.del(c);
-		       expect(root.getIndex(d)).to.be.eql(1);
+		       expect(root.indexOf(d)).to.be.eql(1);
 		   });
 	    });
 	describe('getIndexes', function(){
@@ -242,9 +242,9 @@ describe('lseqnode.js', function() {
 		       var c = new LSEQNode(tripleList, "c");
 		       root.add(c);
 		       expect(root.subCounter).to.be.eql(3);
-		       expect(root.getIndex(a)).to.be.eql(0);
-		       expect(root.getIndex(b)).to.be.eql(1);
-		       expect(root.getIndex(c)).to.be.eql(2);
+		       expect(root.indexOf(a)).to.be.eql(0);
+		       expect(root.indexOf(b)).to.be.eql(1);
+		       expect(root.indexOf(c)).to.be.eql(2);
 		       expect(root.getIndexes(a)).to.be.eql([0]);
 		       expect(root.getIndexes(b)).to.be.eql([1,0]);
 		       expect(root.getIndexes(c)).to.be.eql([1,1]);
