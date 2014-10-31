@@ -13,8 +13,18 @@ $ npm install lseqtree
 
 ## Usage
 
+The module has been [browserified](http://browserify.org) and
+[uglified](https://github.com/mishoo/UglifyJS). To include LSEQTree within
+your browser, put the following line in your html:
+
+```html
+<script src="./lseqtree.bundle.js"></script>
+```
+
+Then, whether you use the browserified version or nodejs:
+
 ```javascript
-var lseqTree = require('lseqtree');
+var LSEQTree = require('lseqtree');
 
 // #1 creating the array
 // site: our unique site identifier
