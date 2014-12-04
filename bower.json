@@ -4,9 +4,8 @@
     "main": "lseqtree.bundle.js",
     "ignore": [
 	"**/*.js",
-	"./test",
-	"./lib",
-	"./index.js",
-	"./package.json"
+	"test",
+	"lib",
+	"package.json"
     ]
 }
