@@ -15,6 +15,15 @@ describe('base.js', function() {
 	    expect(base._b).to.be.eql(1337);
 	});
     });
+
+    describe('singleton', function(){
+        it('get an instance of the function that does not change', function(){
+            var base = new Base(42);
+            expect(base._b).to.be.eql(42);
+            var base2 = new Base();
+            expect(base._b).to.be.eql(42);
+        });
+    });
     
     describe('getBitBase', function(){
 	it('trivially return the bit size of certain level', function(){

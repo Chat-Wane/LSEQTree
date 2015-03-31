@@ -99,7 +99,7 @@ describe('positions.js', function() {
     
     describe('fromNode', function(){
 	    it('convert a simple node to an identifier', function(){
-		    var Base = require('../lib/base.js').getInstance(3);
+		    var Base = require('../lib/base.js')(3);
 		    var path = [];
 		    path.push(new Triple(1,3,0));
 		    path.push(new Triple(5,3,2));
