@@ -53,13 +53,16 @@ var length = lseq.length;
 
 Other
 -----
-[Prior project](http://github.com/chat-wane/lseqarray.git) follows the
+[Prior project](https://github.com/chat-wane/lseqarray.git) follows the
 specification of LSEQTree. Nevertheless, the former is a linearization of the 
 tree into an array. As such, the memory usage is high. On the other hand,
 LSEQTree uses a tree, and therefore, it has a better space complexity. LSEQTree
 uses the core of the prior project to generate its identifiers.
 Despite being less efficient (obviously, the code must be improved), it
 provides interoperability and interchangeability between the two projects.
+
+[Clojure LSEQTree](https://github.com/Tavistock/lseq-tree.git) from
+[Tavistock](https://github.com/Tavistock)
 
 References
 ----------

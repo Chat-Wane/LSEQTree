@@ -1,33 +1,30 @@
 {
     "name": "lseqtree",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "author": "Chat-Wane <grumpy.chat.wane@gmail.com>",
     "description": "A data structure for distributed arrays using the LSEQ allocation strategy.",
     "main": "./lib/lseqtree.js",
     "repository": {
-	"type": "git",
-	"url": "https://github.com/chat-wane/LSEQTree.git"
+	      "type": "git",
+	      "url": "https://github.com/chat-wane/LSEQTree.git"
     },
     "keywords": [
-	"distributed structure",
-	"CRDT",
-	"LSEQ",
-	"tree",
-	"array",
-	"vector"
+        "distributed structure",
+        "CRDT",
+        "LSEQ",
+        "tree",
+        "array",
+        "vector"
     ],
     "dependencies": {
-	"BigInt": "5.4.x"
+        "BigInt": "5.4.x"
     },
     "devDependencies": {
-	"expect.js":  "0.2.x",
-	"mocha":  "1.17.x"
+        "expect.js":  "0.2.x",
+        "mocha":  "1.17.x"
     },
     "bundledDependencies": [
-	"BigInt"
+        "BigInt"
     ],
-    "license": "MIT",
-    "engines": {
-	"node": ">=0.10.28"
-    }
+    "license": "MIT"
 }
