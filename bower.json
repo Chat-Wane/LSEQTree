@@ -1,11 +1,11 @@
 {
     "name": "lseqtree",
-    "version": "0.1.3",
-    "main": "lseqtree.bundle.js",
+    "version": "0.2.0",
+    "main": "build/lseqtree.bundle.js",
     "ignore": [
-	"**/*.js",
-	"test",
-	"lib",
-	"package.json"
+	      "**/*.js",
+        "test",
+        "lib",
+        "package.json"
     ]
 }

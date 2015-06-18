@@ -1,6 +1,6 @@
 {
     "name": "lseqtree",
-    "version": "0.1.4",
+    "version": "0.2.0",
     "author": "Chat-Wane <grumpy.chat.wane@gmail.com>",
     "description": "A data structure for distributed arrays using the LSEQ allocation strategy.",
     "main": "./lib/lseqtree.js",
@@ -20,11 +20,15 @@
         "BigInt": "5.4.x"
     },
     "devDependencies": {
-        "expect.js":  "0.2.x",
-        "mocha":  "1.17.x"
+        "expect.js":  "0.3.x",
+        "mocha":  "2.2.x"
     },
     "bundledDependencies": [
         "BigInt"
     ],
+    "scripts":{
+        "debug": "browserify -r ./lib/lseqtree.js:lseqtree --debug > build/lseqtree.bundle.debug.js",
+        "build": "browserify -r ./lib/lseqtree.js:lseqtree | uglifyjs > build/lseqtree.bundle.js"
+    },
     "license": "MIT"
 }
