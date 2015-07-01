@@ -3,7 +3,7 @@ var Mocha = require('mocha');
 
 var LSEQ = require('../lib/lseqtree.js');
 
-var N = 10000;
+var N = 100000;
 
 describe('lseqtree.js', function(){
     
