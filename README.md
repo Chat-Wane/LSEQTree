@@ -18,7 +18,7 @@ The module has been [browserified](http://browserify.org) and
 your browser, put the following line in your html:
 
 ```html
-<script src="./lseqtree.bundle.js"></script>
+<script src="./path/to/bundle/lseqtree.bundle.js"></script>
 ```
 
 Then, whether you use the browserified version or nodejs:
@@ -53,7 +53,10 @@ var length = lseq.length;
 
 Other
 -----
-[Prior project](https://github.com/chat-wane/lseqarray.git) follows the
+* [Clojure LSEQTree](https://github.com/Tavistock/lseq-tree.git) from
+[Travis McNeill](https://github.com/Tavistock)
+
+* [Prior project](https://github.com/chat-wane/lseqarray.git) follows the
 specification of LSEQTree. Nevertheless, the former is a linearization of the 
 tree into an array. As such, the memory usage is high. On the other hand,
 LSEQTree uses a tree, and therefore, it has a better space complexity. LSEQTree
@@ -61,11 +64,16 @@ uses the core of the prior project to generate its identifiers.
 Despite being less efficient (obviously, the code must be improved), it
 provides interoperability and interchangeability between the two projects.
 
-[Clojure LSEQTree](https://github.com/Tavistock/lseq-tree.git) from
-[Tavistock](https://github.com/Tavistock)
-
 References
 ----------
-[1] [A comprehensive study of Convergent and Commutative Replicated Data Types](http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf)
 
-[2] [LSEQ: an Adaptive Structure for Sequences in Distributed Collaborative Editing](http://hal.archives-ouvertes.fr/docs/00/92/16/33/PDF/fp025-nedelec.pdf)
+[1] Shapiro, M., Preguiça, N., Baquero, C., Zawirski, M. (2011). [A
+comprehensive study of Convergent and Commutative Replicated Data
+Types](http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf). <i>Research
+Report.</i>
+
+[2] Nédelec B., Molli, P., Mostefaoui, A., Desmontils, E. (2013). [LSEQ: an
+Adaptive Structure for Sequences in Distributed Collaborative
+Editing](http://hal.archives-ouvertes.fr/docs/00/92/16/33/PDF/fp025-nedelec.pdf).
+<i>DocEng '13 Proceedings of the 2013 ACM symposium on Document
+engineering. Pages 37-46.</i>
