@@ -1,12 +1,12 @@
 {
     "name": "lseqtree",
-    "version": "0.3.5",
+    "version": "1.0.0",
     "author": "Chat-Wane <grumpy.chat.wane@gmail.com>",
-    "description": "A data structure for distributed arrays using the LSEQ allocation strategy.",
+    "description": "A data structure for distributed arrays using the LSeq allocation strategy.",
     "main": "./lib/lseqtree.js",
     "repository": {
-	      "type": "git",
-	      "url": "https://github.com/chat-wane/LSEQTree.git"
+        "type": "git",
+        "url": "https://github.com/chat-wane/LSEQTree.git"
     },
     "keywords": [
         "distributed structure",
