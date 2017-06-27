@@ -1,0 +1,10 @@
+{
+    "title": "lseqtree",
+    "source":"./lib",
+    "destination":"./docs",
+    "coverage": false,
+    "access": ["public", "protected", "private"],
+    "index": "./README.md",
+    "package": "./package.json",
+    "plugins": [{"name": "esdoc-node"}]
+}

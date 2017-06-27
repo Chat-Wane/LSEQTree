@@ -11,24 +11,33 @@
     "keywords": [
         "distributed structure",
         "CRDT",
-        "LSEQ",
+        "LSeq",
         "tree",
-        "array",
-        "vector"
+        "array"
     ],
     "dependencies": {
-        "BigInt": "5.4.x"
+        "BigInt": "^5.4.5",
+        "lodash": "^4.17.4"
     },
     "devDependencies": {
-        "expect.js":  "0.3.x",
-        "mocha":  "2.2.x"
+        "expect.js": "0.3.x",
+        "mocha": "2.2.x",
+        "babel-preset-es2015": "^6.24.0",
+        "babelify": "^7.3.0",
+        "browserify": "6.2.x",
+        "esdoc": "^0.5.2",
+        "esdoc-node": "^1.0.1"
     },
     "bundledDependencies": [
-        "BigInt"
+        "BigInt",
+        "lodash"
     ],
-    "scripts":{
-        "debug": "browserify -r ./lib/lseqtree.js:lseqtree --debug > build/lseqtree.bundle.debug.js",
-        "build": "browserify -r ./lib/lseqtree.js:lseqtree | uglifyjs > build/lseqtree.bundle.js"
+    "scripts": {
+        "esdoc": "esdoc && npm run",
+        "test": "npm run all",
+        "all": "npm run debug && npm run build && npm run esdoc",
+        "debug": "browserify -r ./lib/lseqtree.js:lseqtree -t [ babelify --presets [ es2015 ] ] --debug > build/lseqtree.bundle.debug.js",
+        "build": "browserify -r ./lib/lseqtree.js:lseqtree -t [ babelify --presets [ es2015 ] ] > build/lseqtree.bundle.js"
     },
     "license": "MIT"
 }
