@@ -34,9 +34,8 @@
     ],
     "scripts": {
         "esdoc": "esdoc && npm run",
-        "test": "npm run all && npm run mocha",
-        "mocha": "mocha ./test/test* ",
-        "all": "npm run debug && npm run build && npm run esdoc",
+        "test": "mocha ./test/test*",
+        "all": "npm run debug && npm run build && npm run esdoc && npm run test",
         "debug": "browserify -r ./lib/lseqtree.js:lseqtree -t [ babelify --presets [ es2015 ] ] --debug > build/lseqtree.bundle.debug.js",
         "build": "browserify -r ./lib/lseqtree.js:lseqtree -t [ babelify --presets [ es2015 ] ] > build/lseqtree.bundle.js"
     },

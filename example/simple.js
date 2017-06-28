@@ -20,6 +20,9 @@ console.log('\tSize of the 2nd structure: ' + lseq2.length);
 // > Size of the 1st structure: 1
 // > Size of the 1st structure: 1
 
+console.log('\tCharacter at index 0: ' + lseq1.get(0));
+// > Character at index 0: A
+
 console.log('#C We remove the element at position 0, ie, character "A"');
 const idDelete = lseq2.remove(0);
 console.log('\tSize of the 1st structure: ' + lseq1.length);
