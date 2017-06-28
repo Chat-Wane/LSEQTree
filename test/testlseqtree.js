@@ -25,7 +25,7 @@ describe('lseqtree.js', function() {
             expect(lseq.length).to.be.eql(1);
             expect(lseq._c).to.be.eql(1);
             expect(lseq._s).to.be.eql(42);
-            expect(lseq.get(1).e).to.be.eql('a');
+            expect(lseq._get(1).e).to.be.eql('a');
         });
         it('insert '+ N +' elements at the beginning of the structure',
            function() {
@@ -61,9 +61,10 @@ describe('lseqtree.js', function() {
             expect(lseq.length).to.be.eql(1);
             expect(lseq._c).to.be.eql(1);
             expect(lseq._s).to.be.eql(42);
-            expect(lseq.get(1).e).to.be.eql('a');
+            expect(lseq._get(1).e).to.be.eql('a');
+            expect(lseq.get(0)).to.be.eql('a');
             lseq.remove(0);
-            expect(lseq.get(1).e).to.be.eql('');
+            expect(lseq._get(1).e).to.be.eql('');
             expect(lseq.length).to.be.eql(0);
         });
         it('insert and remove 1000 elements', function(){
