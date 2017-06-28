@@ -86,9 +86,9 @@ describe('lseqtree.js', function() {
                const lseq = new LSeqTree(42);
                const ei = lseq.insert('a', 0);
                const lseq2 = new LSeqTree(1337);
-               const added = lseq.applyInsert(ei._e, ei._i);
+               const added = lseq.applyInsert(ei);
                expect(added).to.be.eql(false);
-               const position = lseq2.applyInsert(ei._e, ei._i);
+               const position = lseq2.applyInsert(ei);
                expect(position).to.be.eql(1);
            });
     });
@@ -96,9 +96,9 @@ describe('lseqtree.js', function() {
         it('try to delete a non existing element', function() {
             const lseq = new LSeqTree(42);
             const ei = lseq.insert('a', 0);
-            const position = lseq.applyRemove(ei._i);
+            const position = lseq.applyRemove(ei.id);
             expect(position).to.be.eql(1);
-            const exist = lseq.applyRemove(ei._i);
+            const exist = lseq.applyRemove(ei.id);
             expect(exist).to.be.eql(-1);
         });
     });
