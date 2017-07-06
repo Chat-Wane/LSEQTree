@@ -61,8 +61,8 @@ console.log('\tSize of the 2nd structure: ' + lseq2.length);
 lseq1.applyRemove(idDelete);
 console.log('\tSize of the 1st structure: ' + lseq1.length);
 console.log('\tSize of the 2nd structure: ' + lseq2.length);
-// Size of the 2nd structure: 0
-// Size of the 2nd structure: 0
+// > Size of the 2nd structure: 0
+// > Size of the 2nd structure: 0
 ```
 
 ## Misc
