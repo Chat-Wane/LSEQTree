@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">lib/strategy.js | lseqtree API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/chat-wane/LSEQTree" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/base.js~Base.html">Base</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/exoutofbounds.js~ExOutOfBounds.html">ExOutOfBounds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqnode.js~LSeqNode.html">LSeqNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqtree.js~LSeqTree.html">LSeqTree</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/strategy.js~Strategy.html">Strategy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/triple.js~Triple.html">Triple</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">lib/strategy.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const BI = require(&apos;BigInt&apos;);
+const Identifier = require(&apos;./identifier.js&apos;);
+
+/**
+ * Enumerate the available sub-allocation strategies. The signature of these
+ * functions is f(Id, Id, N+, N+, N, N): Id.
+ */
+class Strategy {    
+    /**
+     * @param {Base} base The base used to create the new identifiers.
+     * @param {Number} [boundary = 10] The value used as the default maximum
+     * spacing between identifiers.
+     */
+    constructor (base, boundary = 10) {
+        this._base = base;
+        this._boundary = boundary;
+    };
+    
+    /**
+     * Choose an identifier starting from previous bound and adding random
+     * number.
+     * @param {LSeqNode} p The previous identifier.
+     * @param {LSeqNode} q The next identifier.
+     * @param {Number} level The number of concatenation composing the new
+     * identifier.
+     * @param {Number} interval The interval between p and q.
+     * @param {Object} s The source that creates the new identifier.
+     * @param {Number} c The counter of that source.
+     * @return {Identifier} The new allocated identifier.
+     */
+    bPlus (p, q, level, interval, s, c) {
+        let copyP = p, copyQ = q,
+            step = Math.min(this._boundary, interval), //#0 the min interval
+            digit = BI.int2bigInt(0, this._base.getSumBit(level)),
+            value;
+        
+        // #1 copy the previous identifier
+        for (let i = 0; i &lt;= level; ++i) {
+	    value = (p &amp;&amp; p.t.p) || 0;
+            BI.addInt_(digit, value);
+            if (i !== level) {
+                BI.leftShift_(digit, this._base.getBitBase(i + 1));
+            };
+            p = (p &amp;&amp; !p.isLeaf &amp;&amp; p.child) || null;
+        };
+        // #2 create a digit for an identifier by adding a random value
+        // #A Digit
+        BI.addInt_(digit, Math.floor(Math.random() * step + 1));
+        // #B Source &amp; counter
+        return this._getSC(digit, copyP, copyQ, level, s, c);
+    };
+
+
+    
+    /**
+     * Choose an identifier starting from next bound and substract a random
+     * number.
+     * @param {LSeqNode} p The previous identifier.
+     * @param {LSeqNode} q The next identifier.
+     * @param {Number} level The number of concatenation composing the new
+     * identifier.
+     * @param {Number} interval The interval between p and q.
+     * @param {Object} s The source that creates the new identifier.
+     * @param {Number} c The counter of that source.
+     */
+    bMinus (p, q, level, interval, s, c) {
+        let copyP = p, copyQ = q,
+            step = Math.min(this._boundary, interval),// #0 process min interval
+            digit = BI.int2bigInt(0, this._base.getSumBit(level)),
+            pIsGreater = false, commonRoot = true,
+            prevValue, nextValue;
+        
+        // #1 copy next, if previous is greater, copy maxValue @ depth
+        for (let i = 0; i &lt;= level; ++i) {
+            prevValue = (p &amp;&amp; p.t.p) || 0;
+            nextValue = (q &amp;&amp; q.t.p) || 0;
+            
+            if (commonRoot &amp;&amp; prevValue !== nextValue) {
+                commonRoot = false;
+                pIsGreater = prevValue &gt; nextValue;
+            };
+            if (pIsGreater) {
+                nextValue = Math.pow(2,this._base.getBitBase(i))-1;
+            };
+            BI.addInt_(digit, nextValue);
+            if (i !== level) {
+                BI.leftShift_(digit,this._base.getBitBase(i+1));
+            };
+
+            q = (q &amp;&amp; !q.isLeaf &amp;&amp; q.child) || null;
+            p = (p &amp;&amp; !p.isLeaf &amp;&amp; p.child) || null;
+        };
+        
+        // #3 create a digit for an identifier by subing a random value
+        // #A Digit
+        if (pIsGreater) {
+            BI.addInt_(digit, -Math.floor(Math.random()*step) );
+        } else {
+            BI.addInt_(digit, -Math.floor(Math.random()*step)-1 );
+        };
+    
+        // #B Source &amp; counter
+        return this._getSC(digit, copyP, copyQ, level, s, c);
+    };
+
+    /**
+     * Copies the appropriates source and counter from the adjacent identifiers
+     * at the insertion position.
+     * @param {Number} d The digit part of the new identifier.
+     * @param {LSeqNode} p The previous identifier.
+     * @param {LSeqNode} q the next identifier.
+     * @param {Number} level The size of the new identifier.
+     * @param {Object} s The local site identifier.
+     * @param {Number} c The local monotonic counter.
+     * @return {Identifier} The new allocated identifier.
+     */
+    _getSC (d, p, q, level, s, c) {
+        let sources = [], counters = [],
+            i = 0,
+            sumBit = this._base.getSumBit(level),
+            tempDigit, value;
+        
+        while (i &lt;= level) {
+            tempDigit = BI.dup(d);
+            BI.rightShift_(tempDigit, sumBit - this._base.getSumBit(i));
+            value = BI.modInt(tempDigit, Math.pow(2, this._base.getBitBase(i)));
+            sources[i]=s;
+            counters[i]=c;
+            
+            if (q &amp;&amp; q.t.p === value) { sources[i]=q.t.s; counters[i]=q.t.c; };
+            if (p &amp;&amp; p.t.p === value) { sources[i]=p.t.s; counters[i]=p.t.c; };
+            
+            q = (q &amp;&amp; !q.isLeaf &amp;&amp; q.child) || null;
+            p = (p &amp;&amp; !p.isLeaf &amp;&amp; p.child) || null;
+
+            ++i;
+        };
+        
+        return new Identifier(this._base, d, sources, counters);
+    };
+    
+};
+
+module.exports = Strategy;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

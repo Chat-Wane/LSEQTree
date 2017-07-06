@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">lib/identifier.js | lseqtree API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/chat-wane/LSEQTree" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/base.js~Base.html">Base</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/exoutofbounds.js~ExOutOfBounds.html">ExOutOfBounds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqnode.js~LSeqNode.html">LSeqNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqtree.js~LSeqTree.html">LSeqTree</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/strategy.js~Strategy.html">Strategy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/triple.js~Triple.html">Triple</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">lib/identifier.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&apos;use strict&apos;;
+
+const BI = require(&apos;BigInt&apos;);
+const Triple = require(&apos;./triple.js&apos;);
+const LSeqNode = require(&apos;./lseqnode.js&apos;);
+
+/**
+ * Unique and immutable identifier composed of digit, sources, counters.
+ */
+class Identifier {
+    
+    /**
+     * @param {Base} base The base of identifiers.
+     * @param {Number[]} digits The digit (position in dense space).
+     * @param {Object[]} sites The list of sources.
+     * @param {Number[]} counters The list of counters.
+     */
+    constructor (base, digits, sites = [], counters = []) {
+        this._d = digits;
+        this._s = sites;
+        this._c = counters;
+        
+        this._base = base;
+    };
+
+
+    /**
+     * Set the d,s,c values according to the node in argument
+     * @param {LSeqNode} node The lseqnode containing the path in the tree
+     * structure.
+     * @return {Identifier} This identifier modified.
+     */
+    fromNode (node) {
+        // #1 process the length of the path
+        let length = 1, tempNode = node;
+        
+        while (!tempNode.isLeaf) {
+	    ++length;
+            tempNode = tempNode.child;
+        };
+        // #2 copy the values contained in the path
+        this._d = BI.int2bigInt(0, this._base.getSumBit(length - 1));
+        
+        for (let i = 0; i &lt; length ; ++i) {
+            // #1a copy the site id
+            this._s.push(node.t.s);
+            // #1b copy the counter
+            this._c.push(node.t.c);
+            // #1c copy the digit
+            BI.addInt_(this._d, node.t.p);
+            if (i !== length - 1) {
+                BI.leftShift_(this._d, this._base.getBitBase(i+1));
+            };
+            node = node.child;
+        };
+        
+        return this;
+    };
+    
+    /**
+     * Convert the identifier into a node without element.
+     * @param {Object} e The element associated with the node.
+     * @return {LSeqNode} An LSeqNode containing the element and the path
+     * extracted from this identifier.
+     */
+    toNode (e) {
+        const dBitLength = this._base.getSumBit(this._c.length - 1);
+        let resultPath = [], mine;
+        
+        // #1 deconstruct the digit 
+        for (let i = 0; i &lt; this._c.length; ++i) {
+            // #1 truncate mine
+            mine = BI.dup(this._d);
+            // #1a shift right to erase the tail of the path
+            BI.rightShift_(mine, dBitLength - this._base.getSumBit(i));
+            // #1b copy value in the result
+            resultPath.push(
+                new Triple(BI.modInt(mine,
+                                     Math.pow(2, this._base.getBitBase(i))),
+                           this._s[i],
+                           this._c[i]));
+        };
+        return new LSeqNode(resultPath, e);
+    };
+
+
+    /**
+     * Compare two identifiers.
+     * @param {Identifier} o The other identifier.
+     * @return {Integer} -1 if this is lower, 0 if they are equal, 1 if this is
+     * greater.
+     */
+    compareTo (o) {
+        let dBitLength = this._base.getSumBit(this._c.length - 1),
+            odBitLength = this._base.getSumBit(o._c.length - 1),
+            comparing = true,
+            result = 0, i = 0,
+            sum, mine, other;
+        
+        // #1 Compare the list of &lt;d,s,c&gt;
+        while (comparing &amp;&amp; i &lt; Math.min(this._c.length, o._c.length) ) {
+            // can stop before the end of for loop wiz return
+            sum = this._base.getSumBit(i);
+            // #1a truncate mine
+            mine = BI.dup(this._d);
+            BI.rightShift_(mine, dBitLength - sum);
+            // #1b truncate other
+            other = BI.dup(o._d);
+            BI.rightShift_(other, odBitLength - sum);
+            // #2 Compare triples
+            // #A digit
+            if (!BI.equals(mine, other)) {
+                if (BI.greater(mine, other)) {
+                    result = 1;
+                } else {
+                    result = -1;
+                };
+                comparing = false;
+            } else {
+                // #B source
+                result = this._s[i] - o._s[i]; 
+                if (result !== 0) {
+                    comparing = false;
+                } else {
+                    // #C counter
+                    result = this._c[i] - o._c[i];
+                    if (result !== 0) {
+                        comparing = false;
+                    };
+                };
+            };
+            ++i;
+        };
+        
+        // #3 compare list size
+        if (result === 0){
+            result = this._c.length - o._c.length;
+        };
+        
+        return result;
+    };    
+};
+
+
+module.exports = Identifier;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

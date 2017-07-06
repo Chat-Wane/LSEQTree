@@ -6,7 +6,7 @@
     "main": "./lib/lseqtree.js",
     "repository": {
         "type": "git",
-        "url": "https://github.com/chat-wane/LSEQTree.git"
+        "url": "https://github.com/chat-wane/LSEQTree"
     },
     "keywords": [
         "distributed structure",

@@ -1,0 +1,3485 @@
+[
+  {
+    "__docId__": 0,
+    "kind": "file",
+    "name": "lib/base.js",
+    "content": "'use strict';\n\n/**\n * Configuration and util class of the base, i.e. the maximal arity of the first\n * level of the tree.\n */\nclass Base {\n    /**\n     * @param {Number} [b = 3] The number of bits at level 0 of the dense space.\n     */\n    constructor (b = 3) {\n        this._b = b;\n    };\n\n    /**\n     * Process the number of bits usage at a certain level of dense space.\n     * @param {Number} level The level in dense space, i.e., the number of\n     * concatenations of the identifier.\n     * @return {Number} The number of bit to encode a single path concatenation\n     * at the depth in argument.\n     */\n    getBitBase (level) {\n        return this._b + level;\n    };\n\n    /**\n     * Process the total number of bits usage to get to a certain level.\n     * @param {Number} level The level in dense space, i.e., the number of\n     * concatenations of the identifier.\n     * @return {Number} The number of bits required to encode the path\n     * comprising level concatenations.\n     */\n    getSumBit (level) {\n        const n = this.getBitBase(level);\n        const m = this._b - 1;       \n        return (n * (n + 1)) / 2 - (m * (m + 1) / 2);\n    };\n\n    /**\n     * Process the number of possible paths between two LSEQNode.\n     * @param {Number} level The depth of the tree to process.\n     * @param {LSeqNode} p The previous LSeqNode.\n     * @param {LSeqNode} q The next LSeqNode.\n     * @return {Number} The interval between the two nodes at the depth in\n     * argument.\n     */\n    getInterval (level, p, q) {               \n        let sum = 0, i = 0,\n            pIsGreater = false, commonRoot = true,\n            prevValue = 0, nextValue = 0;\n        \n        while (i <= level) {\n            prevValue = (p && p.t.p) || 0;\n            nextValue = (q && q.t.p) || 0;            \n            // #1 check if paths are identical\n            if (commonRoot && prevValue !== nextValue) {\n                commonRoot = false;\n                pIsGreater = prevValue > nextValue;\n            }\n            // #2 process the value to add to interval\n            if (pIsGreater) { nextValue = Math.pow(2,this.getBitBase(i))-1; }\n            if (commonRoot || pIsGreater || i !== level) {\n                sum += nextValue - prevValue; \n            } else {\n                sum += nextValue - prevValue - 1;\n            }\n            if (i!==level){ sum *= Math.pow(2,this.getBitBase(i+1)); };\n            // #3 iterate over path concatenations\n            p = p && p.child || null;\n            q = q && q.child || null;\n            ++i;\n        }\n        return sum;\n    };\n    \n};\n\nmodule.exports = Base;\n",
+    "static": true,
+    "longname": "lib/base.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 1,
+    "kind": "class",
+    "name": "Base",
+    "memberof": "lib/base.js",
+    "static": true,
+    "longname": "lib/base.js~Base",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/base.js",
+    "importStyle": "Base",
+    "description": "Configuration and util class of the base, i.e. the maximal arity of the first\nlevel of the tree.",
+    "lineNumber": 7,
+    "interface": false
+  },
+  {
+    "__docId__": 2,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/base.js~Base",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/base.js~Base#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 11,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": " 3",
+        "defaultRaw": 3,
+        "name": "b",
+        "description": "The number of bits at level 0 of the dense space."
+      }
+    ]
+  },
+  {
+    "__docId__": 3,
+    "kind": "member",
+    "name": "_b",
+    "memberof": "lib/base.js~Base",
+    "static": false,
+    "longname": "lib/base.js~Base#_b",
+    "access": null,
+    "description": null,
+    "lineNumber": 12,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 4,
+    "kind": "method",
+    "name": "getBitBase",
+    "memberof": "lib/base.js~Base",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/base.js~Base#getBitBase",
+    "access": null,
+    "description": "Process the number of bits usage at a certain level of dense space.",
+    "lineNumber": 22,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The level in dense space, i.e., the number of\nconcatenations of the identifier."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The number of bit to encode a single path concatenation\nat the depth in argument."
+    }
+  },
+  {
+    "__docId__": 5,
+    "kind": "method",
+    "name": "getSumBit",
+    "memberof": "lib/base.js~Base",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/base.js~Base#getSumBit",
+    "access": null,
+    "description": "Process the total number of bits usage to get to a certain level.",
+    "lineNumber": 33,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The level in dense space, i.e., the number of\nconcatenations of the identifier."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The number of bits required to encode the path\ncomprising level concatenations."
+    }
+  },
+  {
+    "__docId__": 6,
+    "kind": "method",
+    "name": "getInterval",
+    "memberof": "lib/base.js~Base",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/base.js~Base#getInterval",
+    "access": null,
+    "description": "Process the number of possible paths between two LSEQNode.",
+    "lineNumber": 47,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The depth of the tree to process."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "p",
+        "description": "The previous LSeqNode."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "q",
+        "description": "The next LSeqNode."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The interval between the two nodes at the depth in\nargument."
+    }
+  },
+  {
+    "__docId__": 7,
+    "kind": "file",
+    "name": "lib/exoutofbounds.js",
+    "content": "'use strict';\n\n/**\n * Thrown when the index is higher than the current length-1 of the array, or\n * lower than 0.\n */\nclass ExOutOfBounds {\n\n    /** \n     * @param {Number} index The index out of bounds.\n     * @param {Number} size The size of the array.\n     */\n    constructor (index, size) {\n        this.index = index;\n        this.size = size;\n    };\n};\n\nmodule.exports = ExOutOfBounds;\n",
+    "static": true,
+    "longname": "lib/exoutofbounds.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 8,
+    "kind": "class",
+    "name": "ExOutOfBounds",
+    "memberof": "lib/exoutofbounds.js",
+    "static": true,
+    "longname": "lib/exoutofbounds.js~ExOutOfBounds",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/exoutofbounds.js",
+    "importStyle": "ExOutOfBounds",
+    "description": "Thrown when the index is higher than the current length-1 of the array, or\nlower than 0.",
+    "lineNumber": 7,
+    "interface": false
+  },
+  {
+    "__docId__": 9,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/exoutofbounds.js~ExOutOfBounds",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/exoutofbounds.js~ExOutOfBounds#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 13,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The index out of bounds."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "size",
+        "description": "The size of the array."
+      }
+    ]
+  },
+  {
+    "__docId__": 10,
+    "kind": "member",
+    "name": "index",
+    "memberof": "lib/exoutofbounds.js~ExOutOfBounds",
+    "static": false,
+    "longname": "lib/exoutofbounds.js~ExOutOfBounds#index",
+    "access": null,
+    "description": null,
+    "lineNumber": 14,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 11,
+    "kind": "member",
+    "name": "size",
+    "memberof": "lib/exoutofbounds.js~ExOutOfBounds",
+    "static": false,
+    "longname": "lib/exoutofbounds.js~ExOutOfBounds#size",
+    "access": null,
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 12,
+    "kind": "file",
+    "name": "lib/identifier.js",
+    "content": "'use strict';\n\nconst BI = require('BigInt');\nconst Triple = require('./triple.js');\nconst LSeqNode = require('./lseqnode.js');\n\n/**\n * Unique and immutable identifier composed of digit, sources, counters.\n */\nclass Identifier {\n    \n    /**\n     * @param {Base} base The base of identifiers.\n     * @param {Number[]} digits The digit (position in dense space).\n     * @param {Object[]} sites The list of sources.\n     * @param {Number[]} counters The list of counters.\n     */\n    constructor (base, digits, sites = [], counters = []) {\n        this._d = digits;\n        this._s = sites;\n        this._c = counters;\n        \n        this._base = base;\n    };\n\n\n    /**\n     * Set the d,s,c values according to the node in argument\n     * @param {LSeqNode} node The lseqnode containing the path in the tree\n     * structure.\n     * @return {Identifier} This identifier modified.\n     */\n    fromNode (node) {\n        // #1 process the length of the path\n        let length = 1, tempNode = node;\n        \n        while (!tempNode.isLeaf) {\n\t    ++length;\n            tempNode = tempNode.child;\n        };\n        // #2 copy the values contained in the path\n        this._d = BI.int2bigInt(0, this._base.getSumBit(length - 1));\n        \n        for (let i = 0; i < length ; ++i) {\n            // #1a copy the site id\n            this._s.push(node.t.s);\n            // #1b copy the counter\n            this._c.push(node.t.c);\n            // #1c copy the digit\n            BI.addInt_(this._d, node.t.p);\n            if (i !== length - 1) {\n                BI.leftShift_(this._d, this._base.getBitBase(i+1));\n            };\n            node = node.child;\n        };\n        \n        return this;\n    };\n    \n    /**\n     * Convert the identifier into a node without element.\n     * @param {Object} e The element associated with the node.\n     * @return {LSeqNode} An LSeqNode containing the element and the path\n     * extracted from this identifier.\n     */\n    toNode (e) {\n        const dBitLength = this._base.getSumBit(this._c.length - 1);\n        let resultPath = [], mine;\n        \n        // #1 deconstruct the digit \n        for (let i = 0; i < this._c.length; ++i) {\n            // #1 truncate mine\n            mine = BI.dup(this._d);\n            // #1a shift right to erase the tail of the path\n            BI.rightShift_(mine, dBitLength - this._base.getSumBit(i));\n            // #1b copy value in the result\n            resultPath.push(\n                new Triple(BI.modInt(mine,\n                                     Math.pow(2, this._base.getBitBase(i))),\n                           this._s[i],\n                           this._c[i]));\n        };\n        return new LSeqNode(resultPath, e);\n    };\n\n\n    /**\n     * Compare two identifiers.\n     * @param {Identifier} o The other identifier.\n     * @return {Integer} -1 if this is lower, 0 if they are equal, 1 if this is\n     * greater.\n     */\n    compareTo (o) {\n        let dBitLength = this._base.getSumBit(this._c.length - 1),\n            odBitLength = this._base.getSumBit(o._c.length - 1),\n            comparing = true,\n            result = 0, i = 0,\n            sum, mine, other;\n        \n        // #1 Compare the list of <d,s,c>\n        while (comparing && i < Math.min(this._c.length, o._c.length) ) {\n            // can stop before the end of for loop wiz return\n            sum = this._base.getSumBit(i);\n            // #1a truncate mine\n            mine = BI.dup(this._d);\n            BI.rightShift_(mine, dBitLength - sum);\n            // #1b truncate other\n            other = BI.dup(o._d);\n            BI.rightShift_(other, odBitLength - sum);\n            // #2 Compare triples\n            // #A digit\n            if (!BI.equals(mine, other)) {\n                if (BI.greater(mine, other)) {\n                    result = 1;\n                } else {\n                    result = -1;\n                };\n                comparing = false;\n            } else {\n                // #B source\n                result = this._s[i] - o._s[i]; \n                if (result !== 0) {\n                    comparing = false;\n                } else {\n                    // #C counter\n                    result = this._c[i] - o._c[i];\n                    if (result !== 0) {\n                        comparing = false;\n                    };\n                };\n            };\n            ++i;\n        };\n        \n        // #3 compare list size\n        if (result === 0){\n            result = this._c.length - o._c.length;\n        };\n        \n        return result;\n    };    \n};\n\n\nmodule.exports = Identifier;\n",
+    "static": true,
+    "longname": "lib/identifier.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 13,
+    "kind": "variable",
+    "name": "BI",
+    "memberof": "lib/identifier.js",
+    "static": true,
+    "longname": "lib/identifier.js~BI",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/identifier.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 14,
+    "kind": "variable",
+    "name": "Triple",
+    "memberof": "lib/identifier.js",
+    "static": true,
+    "longname": "lib/identifier.js~Triple",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/identifier.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 15,
+    "kind": "variable",
+    "name": "LSeqNode",
+    "memberof": "lib/identifier.js",
+    "static": true,
+    "longname": "lib/identifier.js~LSeqNode",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/identifier.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 16,
+    "kind": "class",
+    "name": "Identifier",
+    "memberof": "lib/identifier.js",
+    "static": true,
+    "longname": "lib/identifier.js~Identifier",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/identifier.js",
+    "importStyle": "Identifier",
+    "description": "Unique and immutable identifier composed of digit, sources, counters.",
+    "lineNumber": 10,
+    "interface": false
+  },
+  {
+    "__docId__": 17,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/identifier.js~Identifier",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 18,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Base"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "base",
+        "description": "The base of identifiers."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "digits",
+        "description": "The digit (position in dense space)."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "sites",
+        "description": "The list of sources."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "counters",
+        "description": "The list of counters."
+      }
+    ]
+  },
+  {
+    "__docId__": 18,
+    "kind": "member",
+    "name": "_d",
+    "memberof": "lib/identifier.js~Identifier",
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#_d",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 19,
+    "kind": "member",
+    "name": "_s",
+    "memberof": "lib/identifier.js~Identifier",
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#_s",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 20,
+    "kind": "member",
+    "name": "_c",
+    "memberof": "lib/identifier.js~Identifier",
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#_c",
+    "access": null,
+    "description": null,
+    "lineNumber": 21,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 21,
+    "kind": "member",
+    "name": "_base",
+    "memberof": "lib/identifier.js~Identifier",
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#_base",
+    "access": null,
+    "description": null,
+    "lineNumber": 23,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 22,
+    "kind": "method",
+    "name": "fromNode",
+    "memberof": "lib/identifier.js~Identifier",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#fromNode",
+    "access": null,
+    "description": "Set the d,s,c values according to the node in argument",
+    "lineNumber": 33,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "node",
+        "description": "The lseqnode containing the path in the tree\nstructure."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Identifier"
+      ],
+      "spread": false,
+      "description": "This identifier modified."
+    }
+  },
+  {
+    "__docId__": 23,
+    "kind": "member",
+    "name": "_d",
+    "memberof": "lib/identifier.js~Identifier",
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#_d",
+    "access": null,
+    "description": null,
+    "lineNumber": 42,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 24,
+    "kind": "method",
+    "name": "toNode",
+    "memberof": "lib/identifier.js~Identifier",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#toNode",
+    "access": null,
+    "description": "Convert the identifier into a node without element.",
+    "lineNumber": 66,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "e",
+        "description": "The element associated with the node."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqNode"
+      ],
+      "spread": false,
+      "description": "An LSeqNode containing the element and the path\nextracted from this identifier."
+    }
+  },
+  {
+    "__docId__": 25,
+    "kind": "method",
+    "name": "compareTo",
+    "memberof": "lib/identifier.js~Identifier",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/identifier.js~Identifier#compareTo",
+    "access": null,
+    "description": "Compare two identifiers.",
+    "lineNumber": 93,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Identifier"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "o",
+        "description": "The other identifier."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Integer"
+      ],
+      "spread": false,
+      "description": "1 if this is lower, 0 if they are equal, 1 if this is\ngreater."
+    }
+  },
+  {
+    "__docId__": 26,
+    "kind": "file",
+    "name": "lib/lseqnode.js",
+    "content": "'use strict';\n\nconst Triple = require('./triple.js');\n\n/**\n * A node of the LSeq tree.\n */\nclass LSeqNode {\n    /**\n     * @param {Triple[]} triples The list of triples composing the path to the\n     * element.\n     * @param {Object} element The element to insert in the structure, e.g., a\n     * character in a text document.\n     */\n    constructor (triples = [], element = null) {\n        this.t = triples.shift();\n        this.e = null;\n        if (triples.length === 0) { this.e = element; };\n        this.subCounter = (triples.length > 0 && 1) || 0;\n        this.children = [];\n        triples.length > 0 &&\n            this.children.push(new LSeqNode(triples, element));\n    };\n    \n    /**\n     * Getter to the first child.\n     * @returns {LSeqNode} The first child of this node. Null if it does not\n     * exists.\n     */\n    get child () {\n        return ((this.children.length > 0) && this.children[0]) || null;\n    };\n\n    /**\n     * Comparator between to LSeqNodes.\n     * @param {LSeqNode} o The other LSeqNode to compare to.\n     */\n    compareTo (o) {\n        return this.t.compareTo(o.t);\n    };\n    \n    /**\n     * Add a node to the current node.\n     * @param {LSeqNode} node The node to add as a children of this node.\n     * @return {Boolean} False if the element already exists, True otherwise.\n     */\n    add (node) {\n        const index = this._binaryIndexOf(node);\n        \n        // #1 if the path do no exist, create it\n        if (!this._contains(node)) {\n            this.children.splice(-index, 0, node);\n            this.subCounter += 1;\n            // #2 otherwise, continue to explore the subtrees\n        } else if (node.children.length === 0) {\n            // #2a check if the element already exists\n            if (this.children[index].e !== null){\n                return false;\n            } else {\n                this.children[index].e = node.e;\n                this.subCounter += 1;\n            };\n            // #3 if didnot exist, increment the counter\n        } else if (this.children[index].add(node.child)) {\n            this.subCounter += 1;\n        };\n        return true;\n    };\n\n\n    /**\n     * Remove the node of the tree and all node within path being useless.\n     * @param {LSeqNode} node the node containing the path to remove\n     * @return {Boolean} True if the node has been removed, False if it does not\n     * exist.\n     */\n    del (node) {\n        const indexes = this._getIndexes(node);\n        let currentTree = this, i = 0, isSplitted = false;\n\n        // #1 The element does not exists, stop\n        if (indexes.length === 0) { return false; };\n\n        // #2 Crawl the path and remove the element\n        currentTree.subCounter -= 1;\n        while (i < indexes.length && !(isSplitted)) {\n            let isLast = currentTree.children[indexes[i]]._hasElement &&\n                i === indexes.length - 1;\n            if (!isLast) {\n                currentTree.children[indexes[i]].subCounter -= 1;     \n            };\n            if (currentTree.children[indexes[i]].subCounter <= 0 &&\n                (!currentTree.children[indexes[i]]._hasElement || isLast)) {\n                currentTree.children.splice(indexes[i], 1);\n                isSplitted = true;\n            };\n            currentTree = currentTree.children[indexes[i]];\n            ++i;\n        };\n        if (!isSplitted){ currentTree.e = null;};\n\n        return true;\n    };\n\n\n    /**\n     * The ordered tree can be linearized into a sequence. This function get the\n     * index of the path represented by the list of triples.\n     * @param {LSeqNode} node The node containing -- at least -- the path to the\n     * element.\n     * @return {Number} The index of the node in the linearized sequence; -1 if\n     * the element does not exist.\n     */\n    indexOf (node) {\n        const indexes = this._getIndexes(node);\n        let sum = 0, currentTree = this, j;\n        \n        // #1 If the node does not exist, stop\n        if (indexes.length === 0) { return -1; };\n\n        // #2 Otherwise, start counting\n        if (currentTree._hasElement) { sum += 1; };\n        \n        for (let i = 0; i < indexes.length; ++i) {\n            if (indexes[i] < currentTree.children.length/2) {\n                // #A start from the beginning [---->|     ]\n                j = 0;\n                while (j < indexes[i]) {\n                    if (currentTree.children[j]._hasElement) { sum += 1; };\n                    sum += currentTree.children[j].subCounter;\n                    ++j;\n                };\n            } else {\n                // #B start from the end [     |<----]\n                sum += currentTree.subCounter;\n                j = currentTree.children.length - 1;\n                while (j >= indexes[i]) {\n                    if (currentTree.children[j]._hasElement){ sum -= 1; };\n                    sum -= currentTree.children[j].subCounter;\n                    --j;\n                };\n                j += 1;\n            };\n            if (currentTree.children[j]._hasElement) { sum += 1; };\n            currentTree = currentTree.children[j];\n        };\n        return sum - 1; // -1 because algorithm counted the element itself\n    };\n\n\n    /**\n     * The ordered tree can be linearized. This function gets the node at the\n     * index in the projected sequence.\n     * @param {Number} index The index in the sequence.\n     * @return {LSeqNode} The node at the index.\n     */\n    get (index) {\n\n        /**\n         * @param {Number} leftSum The sum of all element at the left of the\n         * current inspected node.\n         * @param {LSeqNode} buildingNode The head part of the node being built\n         * as we crawl.\n         * @param {LSeqNode} queue The queue part of the node being built.\n         * @param {LSeqNode} currentNode The subtree being crawled.\n         */\n        const _get = (leftSum, buildingNode, queue, currentNode) => {\n            let startBeginning = true, useFunction, i = 0, p, temp;\n            // #0 The node is found, return the incrementally built node and\n            // praise the sun !\n            if (leftSum === index && currentNode._hasElement) {\n                // 1a copy the value of the element in the path\n                queue.e = currentNode.e;\n                return buildingNode;\n            };\n            if (currentNode._hasElement){ leftSum += 1; };\n            \n            // #1 search: do I start from the beginning or the end\n            startBeginning = index-leftSum < currentNode.subCounter/2;\n            if (startBeginning) {\n                useFunction = (a, b) => a + b;\n            } else {\n                leftSum += currentNode.subCounter;\n                useFunction = (a, b) => a - b;\n            }\n            \n            // #2a counting the element from left to right\n            if (!startBeginning) { i = currentNode.children.length - 1; };\n            while ((startBeginning && leftSum <= index) ||\n                   (!startBeginning && leftSum > index)) {\n                if (currentNode.children[i]._hasElement) {\n                    leftSum = useFunction(leftSum, 1);\n                };\n                leftSum = useFunction(leftSum,\n                                      currentNode.children[i].subCounter);\n                i = useFunction(i, 1);\n            };\n            \n            // #2b decreasing the incrementation\n            i = useFunction(i, -1);\n            if (startBeginning) {\n                if (currentNode.children[i]._hasElement) {\n                    leftSum = useFunction(leftSum, -1);\n                };\n                leftSum = useFunction(leftSum,\n                                      -currentNode.children[i].subCounter);\n            };\n            \n            // #3 build path\n            p = []; p.push(currentNode.children[i].t);\n            if (buildingNode === null) {\n                buildingNode = new LSeqNode(p, null);\n                queue = buildingNode;\n            } else {\n                temp = new LSeqNode(p, null);\n                queue.add(temp);\n                queue = temp;\n            };\n            return _get(leftSum, buildingNode, queue, currentNode.children[i]);\n        };\n        return _get(0, null, null, this);\n    };\n\n    /**\n     * Cast a JSON object to an LSeqNode. \n     * @param {Object} o The JSON object.\n     * @return {LSeqNode} An LSeqNode.\n     */\n    static fromJSON (o) {\n        let beingBuilt;\n\n        // #1 leaf\n        if (o.children.length === 0){\n            beingBuilt = new LSeqNode([new Triple(o.t.p, o.t.s, o.t.c)], o.e);\n        } else {\n            // #2 branch\n            beingBuilt = new LSeqNode([new Triple(o.t.p, o.t.s, o.t.c)]);\n            beingBuilt.children.push(LSeqNode.fromJSON(o.children[0]));\n        };\n        \n        return beingBuilt;\n    };\n    \n    /**\n     * @private Get the list of indexes of the arrays representing the children\n     * in the tree.  \n     * @param {LSeqNode} node The node containing the path.\n     * @return {Number[]} The successive indexes to get to the node. An empty\n     * list if the node does not exist.\n     */\n    _getIndexes (node) {\n        const __getIndexes = (indexes, currentTree, currentNode) => {\n            if (!currentTree._contains(currentNode)) {\n                return [];\n            };\n            \n            const index = currentTree._binaryIndexOf(currentNode);\n            \n            indexes.push(index);\n            \n            return ((currentNode.children.length === 0 ||\n                     currentTree.children.length === 0) && indexes) ||\n                __getIndexes(indexes,\n                             currentTree.children[index],\n                             currentNode.child);            \n        };\n        \n        return __getIndexes([], this, node);\n    };\n    \n    \n\n\n    /**\n     * @private from: [https://gist.github.com/Wolfy87/5734530] Performs a\n     * binary search on the host array.\n     * @param {LSeqNode} searchElement The item to search for within the array.\n     * @return {Number} The index of the element which defaults to -1 when not\n     * found.\n     */\n    _binaryIndexOf (searchElement) {\n        let minIndex = 0;\n        let maxIndex = this.children.length - 1;\n        let currentIndex;\n        let currentElement;\n        \n        while (minIndex <= maxIndex) {\n            currentIndex = Math.floor((minIndex + maxIndex) / 2);\n            currentElement = this.children[currentIndex];\n            if (currentElement.compareTo(searchElement) < 0) {\n                minIndex = currentIndex + 1;\n            } else if (currentElement.compareTo(searchElement) > 0) {\n                maxIndex = currentIndex - 1;\n            } else {\n                return currentIndex;\n            };\n        };\n        return ~maxIndex;\n    };\n\n    /**\n     * @private Check whether this node contains the searchElement as children.\n     * @param {LSeqNode} searchElement The element to look for.\n     * @return {Boolean} True if this node contains the node in its\n     * children, False otherwise.\n     */\n    _contains (searchElement) {\n        const index = this._binaryIndexOf(searchElement);\n        return this.children.length > 0 &&\n            (index > 0 ||\n             ((index === 0) &&\n              this.child.compareTo(searchElement) === 0));\n    };\n\n    /**\n     * @private Check if the node contains an element.\n     * @return {Boolean} True if the node has an element, false otherwise.\n     */\n    get _hasElement () {\n        return this.e !== null;\n    };\n\n    /**\n     * Check if the node has children.\n     * @return {Boolean} True if the node has children, false otherwise.\n     */\n    get isLeaf () {\n        return this.children.length === 0;\n    };\n    \n};\n\nmodule.exports = LSeqNode;\n\n",
+    "static": true,
+    "longname": "lib/lseqnode.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 27,
+    "kind": "variable",
+    "name": "Triple",
+    "memberof": "lib/lseqnode.js",
+    "static": true,
+    "longname": "lib/lseqnode.js~Triple",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/lseqnode.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 28,
+    "kind": "class",
+    "name": "LSeqNode",
+    "memberof": "lib/lseqnode.js",
+    "static": true,
+    "longname": "lib/lseqnode.js~LSeqNode",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/lseqnode.js",
+    "importStyle": "LSeqNode",
+    "description": "A node of the LSeq tree.",
+    "lineNumber": 8,
+    "interface": false
+  },
+  {
+    "__docId__": 29,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 15,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Triple[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "triples",
+        "description": "The list of triples composing the path to the\nelement."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "element",
+        "description": "The element to insert in the structure, e.g., a\ncharacter in a text document."
+      }
+    ]
+  },
+  {
+    "__docId__": 30,
+    "kind": "member",
+    "name": "t",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#t",
+    "access": null,
+    "description": null,
+    "lineNumber": 16,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 31,
+    "kind": "member",
+    "name": "e",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#e",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 32,
+    "kind": "member",
+    "name": "e",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#e",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 33,
+    "kind": "member",
+    "name": "subCounter",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#subCounter",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 34,
+    "kind": "member",
+    "name": "children",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#children",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*[]"
+      ]
+    }
+  },
+  {
+    "__docId__": 35,
+    "kind": "get",
+    "name": "child",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#child",
+    "access": null,
+    "description": "Getter to the first child.",
+    "lineNumber": 30,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{LSeqNode} The first child of this node. Null if it does not\nexists."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqNode"
+      ],
+      "spread": false,
+      "description": "The first child of this node. Null if it does not\nexists."
+    },
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 36,
+    "kind": "method",
+    "name": "compareTo",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#compareTo",
+    "access": null,
+    "description": "Comparator between to LSeqNodes.",
+    "lineNumber": 38,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "o",
+        "description": "The other LSeqNode to compare to."
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 37,
+    "kind": "method",
+    "name": "add",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#add",
+    "access": null,
+    "description": "Add a node to the current node.",
+    "lineNumber": 47,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "node",
+        "description": "The node to add as a children of this node."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "False if the element already exists, True otherwise."
+    }
+  },
+  {
+    "__docId__": 38,
+    "kind": "member",
+    "name": "subCounter",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#subCounter",
+    "access": null,
+    "description": null,
+    "lineNumber": 53,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 39,
+    "kind": "member",
+    "name": "subCounter",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#subCounter",
+    "access": null,
+    "description": null,
+    "lineNumber": 61,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 40,
+    "kind": "member",
+    "name": "subCounter",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#subCounter",
+    "access": null,
+    "description": null,
+    "lineNumber": 65,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 41,
+    "kind": "method",
+    "name": "del",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#del",
+    "access": null,
+    "description": "Remove the node of the tree and all node within path being useless.",
+    "lineNumber": 77,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "node",
+        "description": "the node containing the path to remove"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "True if the node has been removed, False if it does not\nexist."
+    }
+  },
+  {
+    "__docId__": 42,
+    "kind": "method",
+    "name": "indexOf",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#indexOf",
+    "access": null,
+    "description": "The ordered tree can be linearized into a sequence. This function get the\nindex of the path represented by the list of triples.",
+    "lineNumber": 114,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "node",
+        "description": "The node containing -- at least -- the path to the\nelement."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The index of the node in the linearized sequence; -1 if\nthe element does not exist."
+    }
+  },
+  {
+    "__docId__": 43,
+    "kind": "method",
+    "name": "get",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#get",
+    "access": null,
+    "description": "The ordered tree can be linearized. This function gets the node at the\nindex in the projected sequence.",
+    "lineNumber": 157,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The index in the sequence."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqNode"
+      ],
+      "spread": false,
+      "description": "The node at the index."
+    }
+  },
+  {
+    "__docId__": 44,
+    "kind": "method",
+    "name": "fromJSON",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": true,
+    "longname": "lib/lseqnode.js~LSeqNode.fromJSON",
+    "access": null,
+    "description": "Cast a JSON object to an LSeqNode. ",
+    "lineNumber": 229,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "o",
+        "description": "The JSON object."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqNode"
+      ],
+      "spread": false,
+      "description": "An LSeqNode."
+    }
+  },
+  {
+    "__docId__": 45,
+    "kind": "method",
+    "name": "_getIndexes",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#_getIndexes",
+    "access": "private",
+    "description": "",
+    "lineNumber": 251,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "node",
+        "description": "The node containing the path."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number[]"
+      ],
+      "spread": false,
+      "description": "The successive indexes to get to the node. An empty\nlist if the node does not exist."
+    }
+  },
+  {
+    "__docId__": 46,
+    "kind": "method",
+    "name": "_binaryIndexOf",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#_binaryIndexOf",
+    "access": "private",
+    "description": "",
+    "lineNumber": 281,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "searchElement",
+        "description": "The item to search for within the array."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The index of the element which defaults to -1 when not\nfound."
+    }
+  },
+  {
+    "__docId__": 47,
+    "kind": "method",
+    "name": "_contains",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#_contains",
+    "access": "private",
+    "description": "",
+    "lineNumber": 307,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "searchElement",
+        "description": "The element to look for."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "True if this node contains the node in its\nchildren, False otherwise."
+    }
+  },
+  {
+    "__docId__": 48,
+    "kind": "get",
+    "name": "_hasElement",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#_hasElement",
+    "access": "private",
+    "description": "",
+    "lineNumber": 319,
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "True if the node has an element, false otherwise."
+    },
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 49,
+    "kind": "get",
+    "name": "isLeaf",
+    "memberof": "lib/lseqnode.js~LSeqNode",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqnode.js~LSeqNode#isLeaf",
+    "access": null,
+    "description": "Check if the node has children.",
+    "lineNumber": 327,
+    "return": {
+      "nullable": null,
+      "types": [
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "True if the node has children, false otherwise."
+    },
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 50,
+    "kind": "file",
+    "name": "lib/lseqtree.js",
+    "content": "'use strict';\n\nconst merge = require('lodash.merge');\n\nconst Base = require('./base.js');\nconst Strategy = require('./strategy.js');\nconst Identifier = require('./identifier.js');\nconst Triple = require('./triple.js');\nconst LSeqNode = require('./lseqnode.js');\n\nconst ExOutOfBounds = require('./exoutofbounds.js');\n\n\n/**\n * Distributed array using LSeq allocation strategy with an underlying\n * exponential tree.\n */\nclass LSeqTree {\n\n    /**\n     * @param {Object} source The globally unique site identifier.\n     * @param {Object} [options] The options of the LSeqTree.\n     * @param {Number} [options.boundary = 10] The maximal interval between two\n     * generated nodes.\n     * @param {Number} [options.base = 15] The base, i.e., the maximal arity of\n     * the root node. Default is 2**15.\n     */\n    constructor (site, options = {}) {\n        let listTriple;\n        // #0 process options\n        this.options = merge({ boundary: 10, base: 15 }, options);\n\n        // #1 initialize source, counter, and strategy choice\n        this._s = site;\n        this._c = 0;\n        this._hash = (depth) => depth%2;\n\n        this._base = new Base(this.options.base);\n        this._strategy = new Strategy(this._base, this.options.boundary);\n\n        // #2 initialize tree structure with maximal bounds\n        this.root = new LSeqNode();\n        // #A minimal bound\n        this.root.add(new LSeqNode([new Triple(0,0,0)], ''));\n        // #B maximal bound\n        this.root.add(\n            new LSeqNode([new Triple(Math.pow(2, this._base.getBitBase(0)) - 1,\n                                     Number.MAX_VALUE,\n                                     Number.MAX_VALUE)], ''));\n    };\n\n    \n    get length () {\n        let result = this.root.subCounter - 2; // -2: the boundaries\n        result = (this.root._hasElement && result + 1) || result;\n        return result;\n    };\n    \n    /**\n     * Get the element at targeted index in the linearized sequence. It does not\n     * take into account the hidden boundaries of the sequence [MIN, e_1, e_2,\n     * ... e_length, MAX], hence index of e_1 is 0.\n     * @param {Number} index The index of the element in the flattened array.\n     * @return {Object} The element located at the index in argument.\n     */\n    get (index) {\n        if (index < 0 || index >= this.length) {\n            throw new ExOutOfBounds(index, this.length);\n        };\n        \n        let node = this.root.get(index + 1);\n        while (!node.isLeaf){\n            node = node.child;\n        };\n        return node.e;\n    };\n    \n    /**\n     * @private Get the LSeqNode at targeted index in the linearized\n     * sequence. The sequence includes the hidden boundaries [MIN, e_1, e_2,\n     * ... e_length, MAX], hence e_1's index is 1.\n     * @param {Number} index The index of the element in the flattened array.\n     * @return {LSeqNode} The LSeqNode targeting the element at index.\n     */\n    _get (index) {\n        if (index < 0 || index >= this.length + 2) { // +2: boundaries\n            throw new ExOutOfBounds(index, this.length + 2);\n        };\n        \n        return this.root.get(index);\n    };\n\n    /**\n     * Insert a value at the targeted index.\n     * @param {Object} element The element to insert, e.g. a character if the\n     * sequence is a string.\n     * @param {Number} index The position in the array.\n     * @return {Object} {_e: element of Object type, _i: Identifier}\n     */\n    insert (element, index) {\n        const pei = this._get(index), // #1a previous bound\n              qei = this._get(index+1); // #1b next bound\n\n         // #2a incrementing the local counter\n        this._c += 1;\n        // #2b generating the id inbetween the bounds\n        const id = this.alloc(pei, qei);\n\n        // #3 add it to the structure and return value\n        const pair = {elem: element, id: id};\n        this.applyInsert(pair);\n        return pair;\n    };\n\n    /**\n     * Delete the element at the index.\n     * @param {Number} index The index of the element to delete in the array.\n     * @return {Identifier} The identifier of the element at the index.\n     */\n    remove (index) {\n        const ei = this._get(index + 1);\n        const i = new Identifier(this._base).fromNode(ei);\n        this.applyRemove(ei);\n        return i;\n    };\n\n\n    /**\n     * Generate the digit part of the identifiers  between p and q.\n     * @param {LSeqNode} p The digit part of the previous identifier.\n     * @param {LSeqNode} q The digit part of the next identifier.\n     * @return {Identifier} The new identifier located between p and q.\n     */\n    alloc (p, q) {\n        let interval = 0, level = 0;\n        // #1 process the level of the new identifier\n        while (interval <= 0) { // no room for insertion\n            interval = this._base.getInterval(level, p, q);\n            ++level;\n        };\n        level -= 1;\n        if (this._hash(level) === 0) {\n            return this._strategy.bPlus(p, q,\n                                        level, interval,\n                                        this._s, this._c);\n        } else {\n            return this._strategy.bMinus(p, q,\n                                         level, interval,\n                                         this._s, this._c);\n        };\n    };\n    \n    \n    /**\n     * Insert an element created from a remote site into the array.\n     * @param {Object} pair Pair containing the identifier and the element to\n     * insert in the data structure.\n     * @param {Identifier|LSeqNode} pair.id The identifier of the element.\n     * @param {Object} pair.elem The element to insert.\n     * @param {boolean} [noIndex = true] Whether or not it should return the\n     * index of the insert.\n     * @return {Number|Boolean} The index of the newly inserted element in the\n     * array, if asked. -1 if the element already exists and has not been added.\n     * If noIndex, returns true if the element has been added, false otherwise.\n     */\n    applyInsert (pair, noIndex = true) {\n        let node, result, i;\n        // #0 cast from the proper type\n        // #0A the identifier is an Identifier\n        i = pair.id;\n        node =  i && i._d && i._s && i._c &&\n            (new Identifier(this._base, i._d, i._s, i._c).toNode(pair.elem));\n        // #0B the identifier is a LSeqNode\n        node = (i && i.t && i.children && LSeqNode.fromJSON(i)) || node;\n        // #1 integrates the new element to the data structure\n        result = this.root.add(node);\n        // #2 if the element as been added\n        if (noIndex) {\n            return result;\n        } else if (result) {\n            return this.root.indexOf(node);\n        } else {\n            return -1;\n        };        \n    };\n\n    /**\n     * Delete the element with the targeted identifier.\n     * @param {Identifier|LSeqNode} i The identifier of the element.\n     * @return {Number} The index of the element freshly deleted, -1 if no\n     * removal.\n     */\n    applyRemove (i) {\n        let node, position;\n        // #0 cast from the proper type\n        node = i && i._d && i._s && i._c &&\n            (new Identifier(this._base, i._d, i._s, i._c)).toNode(null);\n        // #0B the identifier is a LSEQNode\n        node = (i && i.t && i.children && LSeqNode.fromJSON(i)) || node;\n        // #1 get the index of the element to remove\n        position = this.root.indexOf(node);\n        if (position !== -1){\n            // #2 if it exists remove it\n            this.root.del(node);\n        };\n        return position;\n    };\n\n    /**\n     * Cast the JSON object into a proper LSeqTree.\n     * @param {Object} object the JSON object to cast.\n     * @return {LSeqTree} A self reference.\n     */\n    fromJSON (object) {\n        // #1 copy the source, counter, and length of the object\n        this._s = object._s;\n        this._c = object._c;\n        this.options = object.options;\n\n        this._base = new Base(this.options.base);\n        this._boundary = new Strategy(this._base, this.options.boundary);\n        \n        // #2 depth first adding\n        const depthFirst = (currentNode, currentPath) => {\n            const triple = new Triple(currentNode.t.p,\n                                      currentNode.t.s,\n                                      currentNode.t.c);\n            currentPath.push(triple); // stack\n            if (currentNode.e !== null) {\n                this.root.add(new LSeqNode(currentPath.slice(), currentNode.e));\n            };\n            for (let i = 0; i < currentNode.children.length; ++i) {\n                depthFirst(currentNode.children[i], currentPath);\n            };\n            currentPath.pop(); // unstack\n        };\n        for (let i = 0; i < object.root.children.length; ++i){\n            depthFirst(object.root.children[i], []);\n        };\n        return this;\n    };    \n    \n};\n\nmodule.exports = LSeqTree;\n",
+    "static": true,
+    "longname": "lib/lseqtree.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 51,
+    "kind": "variable",
+    "name": "merge",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~merge",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "variable",
+    "name": "Base",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~Base",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "variable",
+    "name": "Strategy",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~Strategy",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 6,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "variable",
+    "name": "Identifier",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~Identifier",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 7,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 55,
+    "kind": "variable",
+    "name": "Triple",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~Triple",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 8,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 56,
+    "kind": "variable",
+    "name": "LSeqNode",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~LSeqNode",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 9,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "variable",
+    "name": "ExOutOfBounds",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~ExOutOfBounds",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 11,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 58,
+    "kind": "class",
+    "name": "LSeqTree",
+    "memberof": "lib/lseqtree.js",
+    "static": true,
+    "longname": "lib/lseqtree.js~LSeqTree",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree",
+    "importStyle": "LSeqTree",
+    "description": "Distributed array using LSeq allocation strategy with an underlying\nexponential tree.",
+    "lineNumber": 18,
+    "interface": false
+  },
+  {
+    "__docId__": 59,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 28,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "source",
+        "description": "The globally unique site identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "options",
+        "description": "The options of the LSeqTree."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": " 10",
+        "defaultRaw": 10,
+        "name": "options.boundary",
+        "description": "The maximal interval between two\ngenerated nodes."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": " 15",
+        "defaultRaw": 15,
+        "name": "options.base",
+        "description": "The base, i.e., the maximal arity of\nthe root node. Default is 2**15."
+      }
+    ]
+  },
+  {
+    "__docId__": 60,
+    "kind": "member",
+    "name": "options",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#options",
+    "access": null,
+    "description": null,
+    "lineNumber": 31,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 61,
+    "kind": "member",
+    "name": "_s",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_s",
+    "access": null,
+    "description": null,
+    "lineNumber": 34,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "member",
+    "name": "_c",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_c",
+    "access": null,
+    "description": null,
+    "lineNumber": 35,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 63,
+    "kind": "member",
+    "name": "_hash",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_hash",
+    "access": null,
+    "description": null,
+    "lineNumber": 36,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 64,
+    "kind": "member",
+    "name": "_base",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_base",
+    "access": null,
+    "description": null,
+    "lineNumber": 38,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 65,
+    "kind": "member",
+    "name": "_strategy",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_strategy",
+    "access": null,
+    "description": null,
+    "lineNumber": 39,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 66,
+    "kind": "member",
+    "name": "root",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#root",
+    "access": null,
+    "description": null,
+    "lineNumber": 42,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 67,
+    "kind": "get",
+    "name": "length",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#length",
+    "access": null,
+    "description": null,
+    "lineNumber": 53,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 68,
+    "kind": "method",
+    "name": "get",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#get",
+    "access": null,
+    "description": "Get the element at targeted index in the linearized sequence. It does not\ntake into account the hidden boundaries of the sequence [MIN, e_1, e_2,\n... e_length, MAX], hence index of e_1 is 0.",
+    "lineNumber": 66,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The index of the element in the flattened array."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": "The element located at the index in argument."
+    }
+  },
+  {
+    "__docId__": 69,
+    "kind": "method",
+    "name": "_get",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_get",
+    "access": "private",
+    "description": "",
+    "lineNumber": 85,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The index of the element in the flattened array."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqNode"
+      ],
+      "spread": false,
+      "description": "The LSeqNode targeting the element at index."
+    }
+  },
+  {
+    "__docId__": 70,
+    "kind": "method",
+    "name": "insert",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#insert",
+    "access": null,
+    "description": "Insert a value at the targeted index.",
+    "lineNumber": 100,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "element",
+        "description": "The element to insert, e.g. a character if the\nsequence is a string."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The position in the array."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Object"
+      ],
+      "spread": false,
+      "description": "{_e: element of Object type, _i: Identifier}"
+    }
+  },
+  {
+    "__docId__": 71,
+    "kind": "member",
+    "name": "_c",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_c",
+    "access": null,
+    "description": null,
+    "lineNumber": 105,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "number"
+      ]
+    }
+  },
+  {
+    "__docId__": 72,
+    "kind": "method",
+    "name": "remove",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#remove",
+    "access": null,
+    "description": "Delete the element at the index.",
+    "lineNumber": 120,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "index",
+        "description": "The index of the element to delete in the array."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Identifier"
+      ],
+      "spread": false,
+      "description": "The identifier of the element at the index."
+    }
+  },
+  {
+    "__docId__": 73,
+    "kind": "method",
+    "name": "alloc",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#alloc",
+    "access": null,
+    "description": "Generate the digit part of the identifiers  between p and q.",
+    "lineNumber": 134,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "p",
+        "description": "The digit part of the previous identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "q",
+        "description": "The digit part of the next identifier."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Identifier"
+      ],
+      "spread": false,
+      "description": "The new identifier located between p and q."
+    }
+  },
+  {
+    "__docId__": 74,
+    "kind": "method",
+    "name": "applyInsert",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#applyInsert",
+    "access": null,
+    "description": "Insert an element created from a remote site into the array.",
+    "lineNumber": 166,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "pair",
+        "description": "Pair containing the identifier and the element to\ninsert in the data structure."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Identifier",
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "pair.id",
+        "description": "The identifier of the element."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "pair.elem",
+        "description": "The element to insert."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "boolean"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": " true",
+        "defaultRaw": true,
+        "name": "noIndex",
+        "description": "Whether or not it should return the\nindex of the insert."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number",
+        "Boolean"
+      ],
+      "spread": false,
+      "description": "The index of the newly inserted element in the\narray, if asked. -1 if the element already exists and has not been added.\nIf noIndex, returns true if the element has been added, false otherwise."
+    }
+  },
+  {
+    "__docId__": 75,
+    "kind": "method",
+    "name": "applyRemove",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#applyRemove",
+    "access": null,
+    "description": "Delete the element with the targeted identifier.",
+    "lineNumber": 193,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Identifier",
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "i",
+        "description": "The identifier of the element."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "The index of the element freshly deleted, -1 if no\nremoval."
+    }
+  },
+  {
+    "__docId__": 76,
+    "kind": "method",
+    "name": "fromJSON",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#fromJSON",
+    "access": null,
+    "description": "Cast the JSON object into a proper LSeqTree.",
+    "lineNumber": 214,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "object",
+        "description": "the JSON object to cast."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "LSeqTree"
+      ],
+      "spread": false,
+      "description": "A self reference."
+    }
+  },
+  {
+    "__docId__": 77,
+    "kind": "member",
+    "name": "_s",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_s",
+    "access": null,
+    "description": null,
+    "lineNumber": 216,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 78,
+    "kind": "member",
+    "name": "_c",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_c",
+    "access": null,
+    "description": null,
+    "lineNumber": 217,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 79,
+    "kind": "member",
+    "name": "options",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#options",
+    "access": null,
+    "description": null,
+    "lineNumber": 218,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 80,
+    "kind": "member",
+    "name": "_base",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_base",
+    "access": null,
+    "description": null,
+    "lineNumber": 220,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 81,
+    "kind": "member",
+    "name": "_boundary",
+    "memberof": "lib/lseqtree.js~LSeqTree",
+    "static": false,
+    "longname": "lib/lseqtree.js~LSeqTree#_boundary",
+    "access": null,
+    "description": null,
+    "lineNumber": 221,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 82,
+    "kind": "file",
+    "name": "lib/strategy.js",
+    "content": "'use strict';\n\nconst BI = require('BigInt');\nconst Identifier = require('./identifier.js');\n\n/**\n * Enumerate the available sub-allocation strategies. The signature of these\n * functions is f(Id, Id, N+, N+, N, N): Id.\n */\nclass Strategy {    \n    /**\n     * @param {Base} base The base used to create the new identifiers.\n     * @param {Number} [boundary = 10] The value used as the default maximum\n     * spacing between identifiers.\n     */\n    constructor (base, boundary = 10) {\n        this._base = base;\n        this._boundary = boundary;\n    };\n    \n    /**\n     * Choose an identifier starting from previous bound and adding random\n     * number.\n     * @param {LSeqNode} p The previous identifier.\n     * @param {LSeqNode} q The next identifier.\n     * @param {Number} level The number of concatenation composing the new\n     * identifier.\n     * @param {Number} interval The interval between p and q.\n     * @param {Object} s The source that creates the new identifier.\n     * @param {Number} c The counter of that source.\n     * @return {Identifier} The new allocated identifier.\n     */\n    bPlus (p, q, level, interval, s, c) {\n        let copyP = p, copyQ = q,\n            step = Math.min(this._boundary, interval), //#0 the min interval\n            digit = BI.int2bigInt(0, this._base.getSumBit(level)),\n            value;\n        \n        // #1 copy the previous identifier\n        for (let i = 0; i <= level; ++i) {\n\t    value = (p && p.t.p) || 0;\n            BI.addInt_(digit, value);\n            if (i !== level) {\n                BI.leftShift_(digit, this._base.getBitBase(i + 1));\n            };\n            p = (p && !p.isLeaf && p.child) || null;\n        };\n        // #2 create a digit for an identifier by adding a random value\n        // #A Digit\n        BI.addInt_(digit, Math.floor(Math.random() * step + 1));\n        // #B Source & counter\n        return this._getSC(digit, copyP, copyQ, level, s, c);\n    };\n\n\n    \n    /**\n     * Choose an identifier starting from next bound and substract a random\n     * number.\n     * @param {LSeqNode} p The previous identifier.\n     * @param {LSeqNode} q The next identifier.\n     * @param {Number} level The number of concatenation composing the new\n     * identifier.\n     * @param {Number} interval The interval between p and q.\n     * @param {Object} s The source that creates the new identifier.\n     * @param {Number} c The counter of that source.\n     */\n    bMinus (p, q, level, interval, s, c) {\n        let copyP = p, copyQ = q,\n            step = Math.min(this._boundary, interval),// #0 process min interval\n            digit = BI.int2bigInt(0, this._base.getSumBit(level)),\n            pIsGreater = false, commonRoot = true,\n            prevValue, nextValue;\n        \n        // #1 copy next, if previous is greater, copy maxValue @ depth\n        for (let i = 0; i <= level; ++i) {\n            prevValue = (p && p.t.p) || 0;\n            nextValue = (q && q.t.p) || 0;\n            \n            if (commonRoot && prevValue !== nextValue) {\n                commonRoot = false;\n                pIsGreater = prevValue > nextValue;\n            };\n            if (pIsGreater) {\n                nextValue = Math.pow(2,this._base.getBitBase(i))-1;\n            };\n            BI.addInt_(digit, nextValue);\n            if (i !== level) {\n                BI.leftShift_(digit,this._base.getBitBase(i+1));\n            };\n\n            q = (q && !q.isLeaf && q.child) || null;\n            p = (p && !p.isLeaf && p.child) || null;\n        };\n        \n        // #3 create a digit for an identifier by subing a random value\n        // #A Digit\n        if (pIsGreater) {\n            BI.addInt_(digit, -Math.floor(Math.random()*step) );\n        } else {\n            BI.addInt_(digit, -Math.floor(Math.random()*step)-1 );\n        };\n    \n        // #B Source & counter\n        return this._getSC(digit, copyP, copyQ, level, s, c);\n    };\n\n    /**\n     * Copies the appropriates source and counter from the adjacent identifiers\n     * at the insertion position.\n     * @param {Number} d The digit part of the new identifier.\n     * @param {LSeqNode} p The previous identifier.\n     * @param {LSeqNode} q the next identifier.\n     * @param {Number} level The size of the new identifier.\n     * @param {Object} s The local site identifier.\n     * @param {Number} c The local monotonic counter.\n     * @return {Identifier} The new allocated identifier.\n     */\n    _getSC (d, p, q, level, s, c) {\n        let sources = [], counters = [],\n            i = 0,\n            sumBit = this._base.getSumBit(level),\n            tempDigit, value;\n        \n        while (i <= level) {\n            tempDigit = BI.dup(d);\n            BI.rightShift_(tempDigit, sumBit - this._base.getSumBit(i));\n            value = BI.modInt(tempDigit, Math.pow(2, this._base.getBitBase(i)));\n            sources[i]=s;\n            counters[i]=c;\n            \n            if (q && q.t.p === value) { sources[i]=q.t.s; counters[i]=q.t.c; };\n            if (p && p.t.p === value) { sources[i]=p.t.s; counters[i]=p.t.c; };\n            \n            q = (q && !q.isLeaf && q.child) || null;\n            p = (p && !p.isLeaf && p.child) || null;\n\n            ++i;\n        };\n        \n        return new Identifier(this._base, d, sources, counters);\n    };\n    \n};\n\nmodule.exports = Strategy;\n",
+    "static": true,
+    "longname": "lib/strategy.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 83,
+    "kind": "variable",
+    "name": "BI",
+    "memberof": "lib/strategy.js",
+    "static": true,
+    "longname": "lib/strategy.js~BI",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/strategy.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 84,
+    "kind": "variable",
+    "name": "Identifier",
+    "memberof": "lib/strategy.js",
+    "static": true,
+    "longname": "lib/strategy.js~Identifier",
+    "access": null,
+    "export": false,
+    "importPath": "lseqtree/lib/strategy.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 4,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 85,
+    "kind": "class",
+    "name": "Strategy",
+    "memberof": "lib/strategy.js",
+    "static": true,
+    "longname": "lib/strategy.js~Strategy",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/strategy.js",
+    "importStyle": "Strategy",
+    "description": "Enumerate the available sub-allocation strategies. The signature of these\nfunctions is f(Id, Id, N+, N+, N, N): Id.",
+    "lineNumber": 10,
+    "interface": false
+  },
+  {
+    "__docId__": 86,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/strategy.js~Strategy",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 16,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Base"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "base",
+        "description": "The base used to create the new identifiers."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": " 10",
+        "defaultRaw": 10,
+        "name": "boundary",
+        "description": "The value used as the default maximum\nspacing between identifiers."
+      }
+    ]
+  },
+  {
+    "__docId__": 87,
+    "kind": "member",
+    "name": "_base",
+    "memberof": "lib/strategy.js~Strategy",
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#_base",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 88,
+    "kind": "member",
+    "name": "_boundary",
+    "memberof": "lib/strategy.js~Strategy",
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#_boundary",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 89,
+    "kind": "method",
+    "name": "bPlus",
+    "memberof": "lib/strategy.js~Strategy",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#bPlus",
+    "access": null,
+    "description": "Choose an identifier starting from previous bound and adding random\nnumber.",
+    "lineNumber": 33,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "p",
+        "description": "The previous identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "q",
+        "description": "The next identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The number of concatenation composing the new\nidentifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "interval",
+        "description": "The interval between p and q."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "s",
+        "description": "The source that creates the new identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "c",
+        "description": "The counter of that source."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Identifier"
+      ],
+      "spread": false,
+      "description": "The new allocated identifier."
+    }
+  },
+  {
+    "__docId__": 90,
+    "kind": "method",
+    "name": "bMinus",
+    "memberof": "lib/strategy.js~Strategy",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#bMinus",
+    "access": null,
+    "description": "Choose an identifier starting from next bound and substract a random\nnumber.",
+    "lineNumber": 68,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "p",
+        "description": "The previous identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "q",
+        "description": "The next identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The number of concatenation composing the new\nidentifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "interval",
+        "description": "The interval between p and q."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "s",
+        "description": "The source that creates the new identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "c",
+        "description": "The counter of that source."
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 91,
+    "kind": "method",
+    "name": "_getSC",
+    "memberof": "lib/strategy.js~Strategy",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/strategy.js~Strategy#_getSC",
+    "access": null,
+    "description": "Copies the appropriates source and counter from the adjacent identifiers\nat the insertion position.",
+    "lineNumber": 119,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "d",
+        "description": "The digit part of the new identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "p",
+        "description": "The previous identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "LSeqNode"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "q",
+        "description": "the next identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "level",
+        "description": "The size of the new identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "s",
+        "description": "The local site identifier."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "c",
+        "description": "The local monotonic counter."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Identifier"
+      ],
+      "spread": false,
+      "description": "The new allocated identifier."
+    }
+  },
+  {
+    "__docId__": 92,
+    "kind": "file",
+    "name": "lib/triple.js",
+    "content": "'use strict';\n\n/**\n * Triple that contains <path; site; counter>. Identifiers of LSEQ are lists of\n * triples.\n */\nclass Triple {\n\n    /**\n     * @param {Number} path The part of the path in the tree.\n     * @param {Number|String} site The unique site identifier that created the\n     * triple.\n     * @param {Number} counter The local counter of the site when it created the\n     * triple.\n     */       \n    constructor (path, site, counter) {\n        this.p = path;\n        this.s = site;\n        this.c = counter;\n    };\n\n    /**\n     * Compare two triples prioritizing the path, then site, then counter.\n     * @param {Triple} o the other triple to compare .\n     * @returns {Number} -1 if this is lower than o, 1 if this is greater than\n     * o, 0 otherwise.\n     */\n    compareTo (o) {\n        // #1 process maximal virtual bounds\n        if (this.s === Number.MAX_VALUE && this.c === Number.MAX_VALUE){\n            return 1;\n        };\n        if (o.s === Number.MAX_VALUE && o.s === Number.MAX_VALUE){\n            return -1;\n        };\n        // #2 compare p then s then c\n        if (this.p < o.p) { return -1;};\n        if (this.p > o.p) { return 1 ;};\n        if (this.s < o.s) { return -1;};\n        if (this.s > o.s) { return 1 ;};\n        if (this.c < o.c) { return -1;};\n        if (this.c > o.c) { return 1 ;};\n        // #3 they are equal\n        return 0;\n    };\n};\n\nmodule.exports = Triple;\n",
+    "static": true,
+    "longname": "lib/triple.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1
+  },
+  {
+    "__docId__": 93,
+    "kind": "class",
+    "name": "Triple",
+    "memberof": "lib/triple.js",
+    "static": true,
+    "longname": "lib/triple.js~Triple",
+    "access": null,
+    "export": true,
+    "importPath": "lseqtree/lib/triple.js",
+    "importStyle": "Triple",
+    "description": "Triple that contains <path; site; counter>. Identifiers of LSEQ are lists of\ntriples.",
+    "lineNumber": 7,
+    "interface": false
+  },
+  {
+    "__docId__": 94,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/triple.js~Triple",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/triple.js~Triple#constructor",
+    "access": null,
+    "description": "",
+    "lineNumber": 16,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "path",
+        "description": "The part of the path in the tree."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number",
+          "String"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "site",
+        "description": "The unique site identifier that created the\ntriple."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "Number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "counter",
+        "description": "The local counter of the site when it created the\ntriple."
+      }
+    ]
+  },
+  {
+    "__docId__": 95,
+    "kind": "member",
+    "name": "p",
+    "memberof": "lib/triple.js~Triple",
+    "static": false,
+    "longname": "lib/triple.js~Triple#p",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 96,
+    "kind": "member",
+    "name": "s",
+    "memberof": "lib/triple.js~Triple",
+    "static": false,
+    "longname": "lib/triple.js~Triple#s",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 97,
+    "kind": "member",
+    "name": "c",
+    "memberof": "lib/triple.js~Triple",
+    "static": false,
+    "longname": "lib/triple.js~Triple#c",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "unknown": [
+      {
+        "tagName": "@_undocument",
+        "tagValue": ""
+      }
+    ],
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 98,
+    "kind": "method",
+    "name": "compareTo",
+    "memberof": "lib/triple.js~Triple",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/triple.js~Triple#compareTo",
+    "access": null,
+    "description": "Compare two triples prioritizing the path, then site, then counter.",
+    "lineNumber": 28,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Number} -1 if this is lower than o, 1 if this is greater than\no, 0 otherwise."
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Triple"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "o",
+        "description": "the other triple to compare ."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Number"
+      ],
+      "spread": false,
+      "description": "1 if this is lower than o, 1 if this is greater than\no, 0 otherwise."
+    }
+  },
+  {
+    "__docId__": 100,
+    "kind": "external",
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 101,
+    "kind": "external",
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 102,
+    "kind": "external",
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 103,
+    "kind": "external",
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 104,
+    "kind": "external",
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 105,
+    "kind": "external",
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 106,
+    "kind": "external",
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 107,
+    "kind": "external",
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 108,
+    "kind": "external",
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 109,
+    "kind": "external",
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 110,
+    "kind": "external",
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 111,
+    "kind": "external",
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 112,
+    "kind": "external",
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 113,
+    "kind": "external",
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 114,
+    "kind": "external",
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 115,
+    "kind": "external",
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 116,
+    "kind": "external",
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 117,
+    "kind": "external",
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 118,
+    "kind": "external",
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 119,
+    "kind": "external",
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 120,
+    "kind": "external",
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 121,
+    "kind": "external",
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 122,
+    "kind": "external",
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 123,
+    "kind": "external",
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 124,
+    "kind": "external",
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 125,
+    "kind": "external",
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 126,
+    "kind": "external",
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 127,
+    "kind": "external",
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 128,
+    "kind": "external",
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 129,
+    "kind": "external",
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 130,
+    "kind": "external",
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 131,
+    "kind": "external",
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 132,
+    "kind": "external",
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 133,
+    "kind": "external",
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 134,
+    "kind": "external",
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 135,
+    "kind": "external",
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 136,
+    "kind": "external",
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 137,
+    "kind": "external",
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 138,
+    "kind": "external",
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 139,
+    "kind": "external",
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 140,
+    "kind": "external",
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 141,
+    "kind": "external",
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 142,
+    "kind": "external",
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 143,
+    "kind": "external",
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 144,
+    "kind": "external",
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 145,
+    "kind": "external",
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 146,
+    "kind": "external",
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": "",
+    "lineNumber": 193,
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 148,
+    "kind": "external",
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 149,
+    "kind": "external",
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 150,
+    "kind": "external",
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 151,
+    "kind": "external",
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 152,
+    "kind": "external",
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 153,
+    "kind": "external",
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 154,
+    "kind": "external",
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": "",
+    "builtinExternal": true
+  },
+  {
+    "__docId__": 155,
+    "kind": "external",
+    "name": "AudioContext",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "static": true,
+    "longname": "BuiltinExternal/WebAPIExternal.js~AudioContext",
+    "access": null,
+    "description": "",
+    "lineNumber": 34,
+    "builtinExternal": true
+  }
+]

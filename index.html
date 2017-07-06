@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">lseqtree API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/chat-wane/LSEQTree" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/base.js~Base.html">Base</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/exoutofbounds.js~ExOutOfBounds.html">ExOutOfBounds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/identifier.js~Identifier.html">Identifier</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqnode.js~LSeqNode.html">LSeqNode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/lseqtree.js~LSeqTree.html">LSeqTree</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/strategy.js~Strategy.html">Strategy</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/lib/triple.js~Triple.html">Triple</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="lseqtree">LSEQTree</h1>
+<p><em>Keywords: distributed systems, collaborative editing, CRDT, LSEQ allocation strategy, unique identifiers, tree-based array</em></p>
+<p>This project aims to provide an implementation of a CRDT-based array [1] with 
+an underlying exponential tree and the allocation strategy LSeq [2].</p>
+<h2 id="installation">Installation</h2>
+<pre><code><code class="source-code prettyprint">$ npm install lseqtree</code>
+</code></pre><h2 id="usage">Usage</h2>
+<p>To include LSeqTree within your web browser, put the following line in your
+html:</p>
+<pre><code class="lang-html"><code class="source-code prettyprint">&lt;script src=&quot;./path/to/bundle/lseqtree.bundle.js&quot;&gt;&lt;/script&gt;</code>
+</code></pre>
+<p>In your JavaScript file:</p>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">const LSeqTree = require(&apos;lseqtree&apos;);</code>
+</code></pre>
+<h2 id="example">Example</h2>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">// #1 We create a first distributed data structure for sequences&apos;
+const lseq1 = new LSeqTree(1);
+
+// #2 We insert an element in the structure
+const idInsert = lseq1.insert(&apos;A&apos;, 0);
+console.log(&apos;\tSize of the 1st structure: &apos; + lseq1.length);
+// &gt; Size of the 1st structure: 1
+
+console.log(&apos;#A We initialize a second structure&apos;);
+const lseq2 = new LSeqTree(2);
+
+// #B We insert the element of the first structure
+lseq2.applyInsert(idInsert);
+console.log(&apos;\tSize of the 1st structure: &apos; + lseq1.length);
+console.log(&apos;\tSize of the 2nd structure: &apos; + lseq2.length);
+// &gt; Size of the 1st structure: 1
+// &gt; Size of the 1st structure: 1
+
+console.log(&apos;\tCharacter at index 0: &apos; + lseq1.get(0));
+// &gt; Character at index 0: A
+
+// #C We remove the element at position 0, ie, character &quot;A&quot;
+const idDelete = lseq2.remove(0);
+console.log(&apos;\tSize of the 1st structure: &apos; + lseq1.length);
+console.log(&apos;\tSize of the 2nd structure: &apos; + lseq2.length);
+// &gt; Size of the 1st structure: 1
+// &gt; Size of the 2nd structure: 0
+
+// #3 We apply the removal to the first structure
+lseq1.applyRemove(idDelete);
+console.log(&apos;\tSize of the 1st structure: &apos; + lseq1.length);
+console.log(&apos;\tSize of the 2nd structure: &apos; + lseq2.length);
+// &gt; Size of the 2nd structure: 0
+// &gt; Size of the 2nd structure: 0</code>
+</code></pre>
+<h2 id="misc">Misc</h2>
+<ul>
+<li><p><a href="https://github.com/Tavistock/lseq-tree.git">Clojure LSEQTree</a> from
+<a href="https://github.com/Tavistock">Travis McNeill</a></p>
+</li>
+<li><p><a href="https://github.com/chat-wane/lseqarray.git">Prior project</a> <del>follows the
+specification of LSEQTree</del>. Nevertheless, the former is a linearization of the 
+tree into an array. As such, the memory usage is high. On the other hand,
+LSEQTree uses a tree, and therefore, it has a better space complexity. LSEQTree
+uses the core of the prior project to generate its identifiers.
+Despite being less efficient (obviously, the code must be improved), <del>it
+provides interoperability and interchangeability between the two projects</del>.</p>
+</li>
+</ul>
+<h2 id="references">References</h2>
+<p>[1] M. Shapiro, N. Pregui&#xE7;a, C. Baquero, and M. Zawirski. <a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf">A comprehensive study
+of Convergent and Commutative Replicated Data
+Types</a>. <em>Research
+Report.</em> 2011.</p>
+<p>[2] B. N&#xE9;delec, P. Molli, A. Most&#xE9;faoui, and E. Desmontils. <a href="http://hal.archives-ouvertes.fr/docs/00/92/16/33/PDF/fp025-nedelec.pdf">LSEQ: an Adaptive
+Structure for Sequences in Distributed Collaborative
+Editing</a>.
+<em>DocEng &apos;13 Proceedings of the 2013 ACM symposium on Document engineering. Pages
+37-46.</em> Sept. 2013.</p>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
