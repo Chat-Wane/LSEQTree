@@ -10,6 +10,8 @@ fi
 
 rev=$(git rev-parse --short HEAD)
 
+npm run esdoc
+
 cd docs
 
 git init
